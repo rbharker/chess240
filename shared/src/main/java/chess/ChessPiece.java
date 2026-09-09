@@ -77,11 +77,69 @@ public class ChessPiece {
                 int tempRow;
 
                 // CHECK HOW FAR UP RIGHT IF POSSIBLE
-                if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() > 0)) {
+                if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() < BOARD_HEIGHT)) {
+                    tempCol = myPosition.getColumn() + 1;
+                    tempRow = myPosition.getRow() + 1;
+                    // while you're still on the board
+                    while ((tempCol <= BOARD_WIDTH) && (tempRow <= BOARD_HEIGHT)) {
+                        ChessPosition tempPos = new ChessPosition(tempRow, tempCol);
+                        if (board.getPiece(tempPos) != null) {
+                            // if the piece is your color you can't move there
+                            // the farthest you can go this way is the previous iteration
+                            if (board.getPiece(tempPos).pieceColor == pieceColor) {
+                                break;
+                            }
+                            // if the piece is the other color you can move there
+                            else {
+                                ChessMove validMove = new ChessMove(myPosition, tempPos, type);
+                                validMoves.add(validMove);
+                                break;
+                            }
+                        }
+                        else {
+                            ChessMove validMove = new ChessMove(myPosition, tempPos, type);
+                            validMoves.add(validMove);
+                        }
+                        tempCol += 1;
+                        tempRow += 1;
+                    }
+                }
+
+                // CHECK HOW FAR UP LEFT IF POSSIBLE
+                if ((myPosition.getColumn() > 1) && (myPosition.getRow() < BOARD_HEIGHT)) {
+                    tempCol = myPosition.getColumn() - 1;
+                    tempRow = myPosition.getRow() + 1;
+                    // while you're still on the board
+                    while ((tempCol > 0) && (tempRow <= BOARD_HEIGHT)) {
+                        ChessPosition tempPos = new ChessPosition(tempRow, tempCol);
+                        if (board.getPiece(tempPos) != null) {
+                            // if the piece is your color you can't move there
+                            // the farthest you can go this way is the previous iteration
+                            if (board.getPiece(tempPos).pieceColor == pieceColor) {
+                                break;
+                            }
+                            // if the piece is the other color you can move there
+                            else {
+                                ChessMove validMove = new ChessMove(myPosition, tempPos, type);
+                                validMoves.add(validMove);
+                                break;
+                            }
+                        }
+                        else {
+                            ChessMove validMove = new ChessMove(myPosition, tempPos, type);
+                            validMoves.add(validMove);
+                        }
+                        tempCol -= 1;
+                        tempRow += 1;
+                    }
+                }
+
+                // CHECK HOW FAR DOWN RIGHT IF POSSIBLE
+                if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() > 1)) {
                     tempCol  = myPosition.getColumn() + 1;
                     tempRow  = myPosition.getRow() - 1;
                     // while you're still on the board
-                    while ((tempCol != BOARD_WIDTH) && (tempRow > 0)) {
+                    while ((tempCol <= BOARD_WIDTH) && (tempRow > 0)) {
                         ChessPosition tempPos = new ChessPosition(tempRow, tempCol);
                         // if there is a piece
                         if (board.getPiece(tempPos) != null) {
@@ -94,6 +152,7 @@ public class ChessPiece {
                             else {
                                 ChessMove validMove = new ChessMove(myPosition, tempPos, type);
                                 validMoves.add(validMove);
+                                break;
                             }
                         }
                         // otherwise the space is blank and you can move there
@@ -106,8 +165,8 @@ public class ChessPiece {
                     }
                 }
 
-                // CHECK HOW FAR UP LEFT IF POSSIBLE
-                if ((myPosition.getColumn() > 0) && (myPosition.getRow() > 0)) {
+                // CHECK HOW FAR DOWN LEFT IF POSSIBLE
+                if ((myPosition.getColumn() > 1) && (myPosition.getRow() > 1)) {
                     tempCol = myPosition.getColumn() - 1;
                     tempRow = myPosition.getRow() - 1;
                     // while you're still on the board
@@ -121,72 +180,17 @@ public class ChessPiece {
                             }
                             // if the piece is the other color you can move there
                             else {
-                                ChessMove validMove = new ChessMove(myPosition, tempPos, type);
+                                ChessMove validMove = new ChessMove(myPosition, tempPos, null);
                                 validMoves.add(validMove);
+                                break;
                             }
                         }
                         else {
-                            ChessMove validMove = new ChessMove(myPosition, tempPos, type);
+                            ChessMove validMove = new ChessMove(myPosition, tempPos, null);
                             validMoves.add(validMove);
                         }
                         tempCol -= 1;
                         tempRow -= 1;
-                    }
-                }
-
-                // CHECK HOW FAR DOWN RIGHT IF POSSIBLE
-                if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() < BOARD_HEIGHT)) {
-                    tempCol = myPosition.getColumn() + 1;
-                    tempRow = myPosition.getRow() + 1;
-                    // while you're still on the board
-                    while ((tempCol != BOARD_WIDTH) && (tempRow != BOARD_HEIGHT)) {
-                        ChessPosition tempPos = new ChessPosition(tempRow, tempCol);
-                        if (board.getPiece(tempPos) != null) {
-                            // if the piece is your color you can't move there
-                            // the farthest you can go this way is the previous iteration
-                            if (board.getPiece(tempPos).pieceColor == pieceColor) {
-                                break;
-                            }
-                            // if the piece is the other color you can move there
-                            else {
-                                ChessMove validMove = new ChessMove(myPosition, tempPos, type);
-                                validMoves.add(validMove);
-                            }
-                        }
-                        else {
-                            ChessMove validMove = new ChessMove(myPosition, tempPos, type);
-                            validMoves.add(validMove);
-                        }
-                        tempCol += 1;
-                        tempRow += 1;
-                    }
-                }
-
-                // CHECK HOW FAR DOWN LEFT IF POSSIBLE
-                if ((myPosition.getColumn() > 0) && (myPosition.getRow() < BOARD_HEIGHT)) {
-                    tempCol = myPosition.getColumn() - 1;
-                    tempRow = myPosition.getRow() + 1;
-                    // while you're still on the board
-                    while ((tempCol > 0) && (tempRow != BOARD_HEIGHT)) {
-                        ChessPosition tempPos = new ChessPosition(tempRow, tempCol);
-                        if (board.getPiece(tempPos) != null) {
-                            // if the piece is your color you can't move there
-                            // the farthest you can go this way is the previous iteration
-                            if (board.getPiece(tempPos).pieceColor == pieceColor) {
-                                break;
-                            }
-                            // if the piece is the other color you can move there
-                            else {
-                                ChessMove validMove = new ChessMove(myPosition, tempPos, type);
-                                validMoves.add(validMove);
-                            }
-                        }
-                        else {
-                            ChessMove validMove = new ChessMove(myPosition, tempPos, type);
-                            validMoves.add(validMove);
-                        }
-                        tempCol -= 1;
-                        tempRow += 1;
                     }
                 }
                 break;
