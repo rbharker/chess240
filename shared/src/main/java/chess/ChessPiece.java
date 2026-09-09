@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -91,13 +92,13 @@ public class ChessPiece {
                             }
                             // if the piece is the other color you can move there
                             else {
-                                ChessMove validMove = new ChessMove(myPosition, tempPos, type);
+                                ChessMove validMove = new ChessMove(myPosition, tempPos, null);
                                 validMoves.add(validMove);
                                 break;
                             }
                         }
                         else {
-                            ChessMove validMove = new ChessMove(myPosition, tempPos, type);
+                            ChessMove validMove = new ChessMove(myPosition, tempPos, null);
                             validMoves.add(validMove);
                         }
                         tempCol += 1;
@@ -120,13 +121,13 @@ public class ChessPiece {
                             }
                             // if the piece is the other color you can move there
                             else {
-                                ChessMove validMove = new ChessMove(myPosition, tempPos, type);
+                                ChessMove validMove = new ChessMove(myPosition, tempPos, null);
                                 validMoves.add(validMove);
                                 break;
                             }
                         }
                         else {
-                            ChessMove validMove = new ChessMove(myPosition, tempPos, type);
+                            ChessMove validMove = new ChessMove(myPosition, tempPos, null);
                             validMoves.add(validMove);
                         }
                         tempCol -= 1;
@@ -150,14 +151,14 @@ public class ChessPiece {
                             }
                             // if the piece is the other color you can move there
                             else {
-                                ChessMove validMove = new ChessMove(myPosition, tempPos, type);
+                                ChessMove validMove = new ChessMove(myPosition, tempPos, null);
                                 validMoves.add(validMove);
                                 break;
                             }
                         }
                         // otherwise the space is blank and you can move there
                         else {
-                            ChessMove validMove = new ChessMove(myPosition, tempPos, type);
+                            ChessMove validMove = new ChessMove(myPosition, tempPos, null);
                             validMoves.add(validMove);
                         }
                         tempCol += 1;
@@ -209,5 +210,27 @@ public class ChessPiece {
 
         return validMoves;
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessPiece that = (ChessPiece) o;
+        return pieceColor == that.pieceColor && type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pieceColor, type);
+    }
+
+    @Override
+    public String toString() {
+        return "ChessPiece{" +
+                "pieceColor=" + pieceColor +
+                ", type=" + type +
+                '}';
     }
 }
