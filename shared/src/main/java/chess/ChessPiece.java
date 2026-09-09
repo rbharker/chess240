@@ -12,6 +12,8 @@ public class ChessPiece {
 
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
+    static final int BOARD_LENGTH = 8;
+    static final int BOARD_WIDTH = 8;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
@@ -52,18 +54,42 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
 
-        // create private functions depending on what piece type you are
         // switch statement?
-        // in the private functions:
+        // needs to be a loop inside of each switch case
+        // loop can be in range of theoretical possible moves
+        // in each switch case:
             // use your position and ChessBoard's getPiece function to determine what moves you can make
             // have to take into account board limits
             // create a ChessMove object for each move
             // return the ChessMove
             // knight will be hardest
-        // back in this function:
-        // add each ChessMove to the collection
+            // add each ChessMove to the collection
+        // outside of switch statement:
         // return collection
+
+        switch (type) {
+            case BISHOP:
+
+                // check how far up right
+
+                // check how far up left
+
+                // check how far down right
+
+                // check how far down left
+                break;
+            case KING:
+                break;
+            case QUEEN:
+                break;
+            case PAWN:
+                break;
+            case KNIGHT:
+                break;
+            case ROOK:
+                break;
+        }
+
     }
 }
