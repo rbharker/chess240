@@ -12,10 +12,8 @@ import java.util.Objects;
  */
 public class ChessPiece {
 
-    private final ChessGame.TeamColor pieceColor;
-    private final PieceType type;
-    static final int BOARD_HEIGHT = 8;
-    static final int BOARD_WIDTH = 8;
+    public final ChessGame.TeamColor pieceColor;
+    public final PieceType type;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
@@ -61,293 +59,219 @@ public class ChessPiece {
 
         switch (type) {
             case BISHOP:
-                // CHECK HOW FAR UP RIGHT IF POSSIBLE
-                if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() < BOARD_HEIGHT)) {
-                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, 1, 1);
-                    validMoves.addAll(tempMoves);
-                }
-
-                // CHECK HOW FAR UP LEFT IF POSSIBLE
-                if ((myPosition.getColumn() > 1) && (myPosition.getRow() < BOARD_HEIGHT)) {
-                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, -1, 1);
-                    validMoves.addAll(tempMoves);
-                }
-
-                // CHECK HOW FAR DOWN RIGHT IF POSSIBLE
-                if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() > 1)) {
-                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, 1, -1);
-                    validMoves.addAll(tempMoves);
-                }
-
-                // CHECK HOW FAR DOWN LEFT IF POSSIBLE
-                if ((myPosition.getColumn() > 1) && (myPosition.getRow() > 1)) {
-                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, -1, -1);
-                    validMoves.addAll(tempMoves);
-                }
+                BishopMoveStrategy bishop = new BishopMoveStrategy();
+                Collection<ChessMove> tempMoves = bishop.getValidMoves(myPosition, board, pieceColor);
+                validMoves.addAll(tempMoves);
                 break;
 
             case KING:
-                // CHECK UP RIGHT IF POSSIBLE
-                if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() < BOARD_HEIGHT)) {
-                    ChessMove tempMove = move_one(board, myPosition, 1, 1);
-                    if (tempMove != null) {
-                        validMoves.add(tempMove);
-                    }
-                }
-
-                // CHECK UP LEFT IF POSSIBLE
-                if ((myPosition.getColumn() > 1) && (myPosition.getRow() < BOARD_HEIGHT)) {
-                    ChessMove tempMove = move_one(board, myPosition, -1, 1);
-                    if (tempMove != null) {
-                        validMoves.add(tempMove);
-                    }
-                }
-
-                // CHECK DOWN RIGHT IF POSSIBLE
-                if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() > 1)) {
-                    ChessMove tempMove = move_one(board, myPosition, 1, -1);
-                    if (tempMove != null) {
-                        validMoves.add(tempMove);
-                    }
-                }
-
-                // CHECK DOWN LEFT IF POSSIBLE
-                if ((myPosition.getColumn() > 1) && (myPosition.getRow() > 1)) {
-                    ChessMove tempMove = move_one(board, myPosition, -1, -1);
-                    if (tempMove != null) {
-                        validMoves.add(tempMove);
-                    }
-                }
-
-                // CHECK UP IF POSSIBLE
-                if ((myPosition.getRow() < BOARD_HEIGHT)) {
-                    ChessMove tempMove = move_one(board, myPosition, 0, 1);
-                    if (tempMove != null) {
-                        validMoves.add(tempMove);
-                    }
-                }
-                // CHECK DOWN IF POSSIBLE
-                if ((myPosition.getRow() > 1)) {
-                    ChessMove tempMove = move_one(board, myPosition, 0, -1);
-                    if (tempMove != null) {
-                        validMoves.add(tempMove);
-                    }
-                }
-
-                // CHECK RIGHT IF POSSIBLE
-                if ((myPosition.getColumn() < BOARD_WIDTH)) {
-                    ChessMove tempMove = move_one(board, myPosition, 1, 0);
-                    if (tempMove != null) {
-                        validMoves.add(tempMove);
-                    }
-                }
-
-                // CHECK LEFT IF POSSIBLE
-                if ((myPosition.getColumn() > 1)) {
-                    ChessMove tempMove = move_one(board, myPosition, -1, 0);
-                    if (tempMove != null) {
-                        validMoves.add(tempMove);
-                    }
-                }
+//                // CHECK UP RIGHT IF POSSIBLE
+//                if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() < BOARD_HEIGHT)) {
+//                    ChessMove tempMove = move_one(board, myPosition, 1, 1);
+//                    if (tempMove != null) {
+//                        validMoves.add(tempMove);
+//                    }
+//                }
+//
+//                // CHECK UP LEFT IF POSSIBLE
+//                if ((myPosition.getColumn() > 1) && (myPosition.getRow() < BOARD_HEIGHT)) {
+//                    ChessMove tempMove = move_one(board, myPosition, -1, 1);
+//                    if (tempMove != null) {
+//                        validMoves.add(tempMove);
+//                    }
+//                }
+//
+//                // CHECK DOWN RIGHT IF POSSIBLE
+//                if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() > 1)) {
+//                    ChessMove tempMove = move_one(board, myPosition, 1, -1);
+//                    if (tempMove != null) {
+//                        validMoves.add(tempMove);
+//                    }
+//                }
+//
+//                // CHECK DOWN LEFT IF POSSIBLE
+//                if ((myPosition.getColumn() > 1) && (myPosition.getRow() > 1)) {
+//                    ChessMove tempMove = move_one(board, myPosition, -1, -1);
+//                    if (tempMove != null) {
+//                        validMoves.add(tempMove);
+//                    }
+//                }
+//
+//                // CHECK UP IF POSSIBLE
+//                if ((myPosition.getRow() < BOARD_HEIGHT)) {
+//                    ChessMove tempMove = move_one(board, myPosition, 0, 1);
+//                    if (tempMove != null) {
+//                        validMoves.add(tempMove);
+//                    }
+//                }
+//                // CHECK DOWN IF POSSIBLE
+//                if ((myPosition.getRow() > 1)) {
+//                    ChessMove tempMove = move_one(board, myPosition, 0, -1);
+//                    if (tempMove != null) {
+//                        validMoves.add(tempMove);
+//                    }
+//                }
+//
+//                // CHECK RIGHT IF POSSIBLE
+//                if ((myPosition.getColumn() < BOARD_WIDTH)) {
+//                    ChessMove tempMove = move_one(board, myPosition, 1, 0);
+//                    if (tempMove != null) {
+//                        validMoves.add(tempMove);
+//                    }
+//                }
+//
+//                // CHECK LEFT IF POSSIBLE
+//                if ((myPosition.getColumn() > 1)) {
+//                    ChessMove tempMove = move_one(board, myPosition, -1, 0);
+//                    if (tempMove != null) {
+//                        validMoves.add(tempMove);
+//                    }
+//                }
                 break;
-            case QUEEN:
-                // CHECK HOW FAR UP RIGHT IF POSSIBLE
-                if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() < BOARD_HEIGHT)) {
-                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, 1, 1);
-                    validMoves.addAll(tempMoves);
-                }
-
-                // CHECK HOW FAR UP LEFT IF POSSIBLE
-                if ((myPosition.getColumn() > 1) && (myPosition.getRow() < BOARD_HEIGHT)) {
-                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, -1, 1);
-                    validMoves.addAll(tempMoves);
-                }
-
-                // CHECK HOW FAR DOWN RIGHT IF POSSIBLE
-                if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() > 1)) {
-                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, 1, -1);
-                    validMoves.addAll(tempMoves);
-                }
-
-                // CHECK HOW FAR DOWN LEFT IF POSSIBLE
-                if ((myPosition.getColumn() > 1) && (myPosition.getRow() > 1)) {
-                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, -1, -1);
-                    validMoves.addAll(tempMoves);
-                }
-
-                // CHECK HOW FAR UP IF POSSIBLE
-                if ((myPosition.getRow() < BOARD_HEIGHT)) {
-                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, 0, 1);
-                    validMoves.addAll(tempMoves);
-                }
-                // CHECK HOW FAR DOWN IF POSSIBLE
-                if ((myPosition.getRow() > 1)) {
-                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, 0, -1);
-                    validMoves.addAll(tempMoves);
-                }
-
-                // CHECK HOW FAR RIGHT IF POSSIBLE
-                if ((myPosition.getColumn() < BOARD_WIDTH)) {
-                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, 1, 0);
-                    validMoves.addAll(tempMoves);
-                }
-
-                // CHECK HOW FAR LEFT IF POSSIBLE
-                if ((myPosition.getColumn() > 1)) {
-                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, -1, 0);
-                    validMoves.addAll(tempMoves);
-                }
-
+           case QUEEN:
+//                // CHECK HOW FAR UP RIGHT IF POSSIBLE
+//                if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() < BOARD_HEIGHT)) {
+//                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, 1, 1);
+//                    validMoves.addAll(tempMoves);
+//                }
+//
+//                // CHECK HOW FAR UP LEFT IF POSSIBLE
+//                if ((myPosition.getColumn() > 1) && (myPosition.getRow() < BOARD_HEIGHT)) {
+//                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, -1, 1);
+//                    validMoves.addAll(tempMoves);
+//                }
+//
+//                // CHECK HOW FAR DOWN RIGHT IF POSSIBLE
+//                if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() > 1)) {
+//                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, 1, -1);
+//                    validMoves.addAll(tempMoves);
+//                }
+//
+//                // CHECK HOW FAR DOWN LEFT IF POSSIBLE
+//                if ((myPosition.getColumn() > 1) && (myPosition.getRow() > 1)) {
+//                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, -1, -1);
+//                    validMoves.addAll(tempMoves);
+//                }
+//
+//                // CHECK HOW FAR UP IF POSSIBLE
+//                if ((myPosition.getRow() < BOARD_HEIGHT)) {
+//                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, 0, 1);
+//                    validMoves.addAll(tempMoves);
+//                }
+//                // CHECK HOW FAR DOWN IF POSSIBLE
+//                if ((myPosition.getRow() > 1)) {
+//                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, 0, -1);
+//                    validMoves.addAll(tempMoves);
+//                }
+//
+//                // CHECK HOW FAR RIGHT IF POSSIBLE
+//                if ((myPosition.getColumn() < BOARD_WIDTH)) {
+//                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, 1, 0);
+//                    validMoves.addAll(tempMoves);
+//                }
+//
+//                // CHECK HOW FAR LEFT IF POSSIBLE
+//                if ((myPosition.getColumn() > 1)) {
+//                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, -1, 0);
+//                    validMoves.addAll(tempMoves);
+//                }
+//
                 break;
             case PAWN:
                 break;
             case KNIGHT:
-                // CHECK UP 2 RIGHT IF POSSIBLE
-                if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() < BOARD_HEIGHT)) {
-                    ChessMove tempMove = move_one(board, myPosition, 1, 2);
-                    if (tempMove != null) {
-                        validMoves.add(tempMove);
-                    }
-                }
-
-                // CHECK UP 2 LEFT IF POSSIBLE
-                if ((myPosition.getColumn() > 1) && (myPosition.getRow() < BOARD_HEIGHT)) {
-                    ChessMove tempMove = move_one(board, myPosition, -1, 2);
-                    if (tempMove != null) {
-                        validMoves.add(tempMove);
-                    }
-                }
-
-                // CHECK DOWN 2 RIGHT IF POSSIBLE
-                if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() > 1)) {
-                    ChessMove tempMove = move_one(board, myPosition, 1, -2);
-                    if (tempMove != null) {
-                        validMoves.add(tempMove);
-                    }
-                }
-
-                // CHECK DOWN 2 LEFT IF POSSIBLE
-                if ((myPosition.getColumn() > 1) && (myPosition.getRow() > 1)) {
-                    ChessMove tempMove = move_one(board, myPosition, -1, -2);
-                    if (tempMove != null) {
-                        validMoves.add(tempMove);
-                    }
-                }
-
-                // CHECK UP 1 RIGHT IF POSSIBLE
-                if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() < BOARD_HEIGHT)) {
-                    ChessMove tempMove = move_one(board, myPosition, 2, 1);
-                    if (tempMove != null) {
-                        validMoves.add(tempMove);
-                    }
-                }
-
-                // CHECK UP 1 LEFT IF POSSIBLE
-                if ((myPosition.getColumn() > 1) && (myPosition.getRow() < BOARD_HEIGHT)) {
-                    ChessMove tempMove = move_one(board, myPosition, -2, 1);
-                    if (tempMove != null) {
-                        validMoves.add(tempMove);
-                    }
-                }
-
-                // CHECK DOWN 1 RIGHT IF POSSIBLE
-                if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() > 1)) {
-                    ChessMove tempMove = move_one(board, myPosition, 2, -1);
-                    if (tempMove != null) {
-                        validMoves.add(tempMove);
-                    }
-                }
-
-                // CHECK DOWN 1 LEFT IF POSSIBLE
-                if ((myPosition.getColumn() > 1) && (myPosition.getRow() > 1)) {
-                    ChessMove tempMove = move_one(board, myPosition, -2, -1);
-                    if (tempMove != null) {
-                        validMoves.add(tempMove);
-                    }
-                }
+//                // CHECK UP 2 RIGHT IF POSSIBLE
+//                if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() < BOARD_HEIGHT)) {
+//                    ChessMove tempMove = move_one(board, myPosition, 1, 2);
+//                    if (tempMove != null) {
+//                        validMoves.add(tempMove);
+//                    }
+//                }
+//
+//                // CHECK UP 2 LEFT IF POSSIBLE
+//                if ((myPosition.getColumn() > 1) && (myPosition.getRow() < BOARD_HEIGHT)) {
+//                    ChessMove tempMove = move_one(board, myPosition, -1, 2);
+//                    if (tempMove != null) {
+//                        validMoves.add(tempMove);
+//                    }
+//                }
+//
+//                // CHECK DOWN 2 RIGHT IF POSSIBLE
+//                if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() > 1)) {
+//                    ChessMove tempMove = move_one(board, myPosition, 1, -2);
+//                    if (tempMove != null) {
+//                        validMoves.add(tempMove);
+//                    }
+//                }
+//
+//                // CHECK DOWN 2 LEFT IF POSSIBLE
+//                if ((myPosition.getColumn() > 1) && (myPosition.getRow() > 1)) {
+//                    ChessMove tempMove = move_one(board, myPosition, -1, -2);
+//                    if (tempMove != null) {
+//                        validMoves.add(tempMove);
+//                    }
+//                }
+//
+//                // CHECK UP 1 RIGHT IF POSSIBLE
+//                if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() < BOARD_HEIGHT)) {
+//                    ChessMove tempMove = move_one(board, myPosition, 2, 1);
+//                    if (tempMove != null) {
+//                        validMoves.add(tempMove);
+//                    }
+//                }
+//
+//                // CHECK UP 1 LEFT IF POSSIBLE
+//                if ((myPosition.getColumn() > 1) && (myPosition.getRow() < BOARD_HEIGHT)) {
+//                    ChessMove tempMove = move_one(board, myPosition, -2, 1);
+//                    if (tempMove != null) {
+//                        validMoves.add(tempMove);
+//                    }
+//                }
+//
+//                // CHECK DOWN 1 RIGHT IF POSSIBLE
+//                if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() > 1)) {
+//                    ChessMove tempMove = move_one(board, myPosition, 2, -1);
+//                    if (tempMove != null) {
+//                        validMoves.add(tempMove);
+//                    }
+//                }
+//
+//                // CHECK DOWN 1 LEFT IF POSSIBLE
+//                if ((myPosition.getColumn() > 1) && (myPosition.getRow() > 1)) {
+//                    ChessMove tempMove = move_one(board, myPosition, -2, -1);
+//                    if (tempMove != null) {
+//                        validMoves.add(tempMove);
+//                    }
+//                }
                 break;
             case ROOK:
-                // CHECK HOW FAR UP IF POSSIBLE
-                if ((myPosition.getRow() < BOARD_HEIGHT)) {
-                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, 0, 1);
-                    validMoves.addAll(tempMoves);
-                }
-                // CHECK HOW FAR DOWN IF POSSIBLE
-                if ((myPosition.getRow() > 1)) {
-                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, 0, -1);
-                    validMoves.addAll(tempMoves);
-                }
-
-                // CHECK HOW FAR RIGHT IF POSSIBLE
-                if ((myPosition.getColumn() < BOARD_WIDTH)) {
-                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, 1, 0);
-                    validMoves.addAll(tempMoves);
-                }
-
-                // CHECK HOW FAR LEFT IF POSSIBLE
-                if ((myPosition.getColumn() > 1)) {
-                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, -1, 0);
-                    validMoves.addAll(tempMoves);
-                }
+//                // CHECK HOW FAR UP IF POSSIBLE
+//                if ((myPosition.getRow() < BOARD_HEIGHT)) {
+//                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, 0, 1);
+//                    validMoves.addAll(tempMoves);
+//                }
+//                // CHECK HOW FAR DOWN IF POSSIBLE
+//                if ((myPosition.getRow() > 1)) {
+//                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, 0, -1);
+//                    validMoves.addAll(tempMoves);
+//                }
+//
+//                // CHECK HOW FAR RIGHT IF POSSIBLE
+//                if ((myPosition.getColumn() < BOARD_WIDTH)) {
+//                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, 1, 0);
+//                    validMoves.addAll(tempMoves);
+//                }
+//
+//                // CHECK HOW FAR LEFT IF POSSIBLE
+//                if ((myPosition.getColumn() > 1)) {
+//                    Collection<ChessMove> tempMoves = move_multiple(board, myPosition, -1, 0);
+//                    validMoves.addAll(tempMoves);
+//                }
                 break;
         }
 
         return validMoves;
 
-    }
-
-    private ChessMove move_one(ChessBoard board, ChessPosition myPosition, int x, int y) {
-        int tempCol = myPosition.getColumn() + x;
-        int tempRow = myPosition.getRow() + y;
-        ChessPosition tempPos = new ChessPosition(tempRow, tempCol);
-        ChessMove validMove = new ChessMove(myPosition, tempPos, null);
-        // if the space is occupied
-        if (board.getPiece(tempPos) != null) {
-            // if the piece is your color you can't move there
-            if (board.getPiece(tempPos).pieceColor == pieceColor) {
-                return null;
-            }
-            // if the piece is the other color you can move there
-            else {
-                return validMove;
-            }
-        }
-        // otherwise the space is free and you can move
-        else {
-            return validMove;
-        }
-    }
-
-    private Collection<ChessMove> move_multiple(ChessBoard board, ChessPosition myPosition, int x, int y) {
-        int tempCol = myPosition.getColumn() + x;
-        int tempRow = myPosition.getRow() + y;
-        Collection<ChessMove> validMoves = new ArrayList<>();
-        // while you're still on the board
-        while ((tempCol <= BOARD_WIDTH) && (tempRow <= BOARD_HEIGHT)
-                && (tempCol > 0) && (tempRow > 0)) {
-            ChessPosition tempPos = new ChessPosition(tempRow, tempCol);
-            if (board.getPiece(tempPos) != null) {
-                // if the piece is your color you can't move there
-                // the farthest you can go this way is the previous iteration
-                if (board.getPiece(tempPos).pieceColor == pieceColor) {
-                    break;
-                }
-                // if the piece is the other color you can move there
-                else {
-                    ChessMove validMove = new ChessMove(myPosition, tempPos, null);
-                    validMoves.add(validMove);
-                    break;
-                }
-            }
-            else {
-                ChessMove validMove = new ChessMove(myPosition, tempPos, null);
-                validMoves.add(validMove);
-            }
-            tempCol += x;
-            tempRow += y;
-        }
-
-        return validMoves;
     }
 
     @Override
