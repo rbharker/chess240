@@ -34,7 +34,7 @@ interface MoveStrategy {
     }
 
     default Collection<ChessMove> move_multiple(ChessBoard board, ChessPosition myPosition,
-                                                ChessGame.TeamColor color,int x, int y) {
+                                                ChessGame.TeamColor color, int x, int y) {
         int tempCol = myPosition.getColumn() + x;
         int tempRow = myPosition.getRow() + y;
         Collection<ChessMove> validMoves = new ArrayList<>();

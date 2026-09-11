@@ -75,6 +75,9 @@ public class ChessPiece {
                validMoves.addAll(tempMoves);
                 break;
             case PAWN:
+                PawnMoveStrategy pawn = new PawnMoveStrategy();
+                tempMoves = pawn.getValidMoves(myPosition, board, pieceColor);
+                validMoves.addAll(tempMoves);
                 break;
             case KNIGHT:
                 KnightMoveStrategy knight = new KnightMoveStrategy();
