@@ -8,7 +8,7 @@ public class KnightMoveStrategy implements MoveStrategy {
     @Override
     public List<ChessMove> getValidMoves(ChessPosition myPosition, ChessBoard board, ChessGame.TeamColor color) {
         // CHECK UP 2 RIGHT IF POSSIBLE
-        if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() < BOARD_HEIGHT)) {
+        if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() < BOARD_HEIGHT - 1)) {
             ChessMove tempMove = move_one(board, myPosition, color, 1, 2);
             if (tempMove != null) {
                 validMoves.add(tempMove);
@@ -16,7 +16,7 @@ public class KnightMoveStrategy implements MoveStrategy {
         }
 
         // CHECK UP 2 LEFT IF POSSIBLE
-        if ((myPosition.getColumn() > 1) && (myPosition.getRow() < BOARD_HEIGHT)) {
+        if ((myPosition.getColumn() > 1) && (myPosition.getRow() < BOARD_HEIGHT - 1)) {
             ChessMove tempMove = move_one(board, myPosition, color, -1, 2);
             if (tempMove != null) {
                 validMoves.add(tempMove);
@@ -24,7 +24,7 @@ public class KnightMoveStrategy implements MoveStrategy {
         }
 
         // CHECK DOWN 2 RIGHT IF POSSIBLE
-        if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() > 1)) {
+        if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() > 2)) {
             ChessMove tempMove = move_one(board, myPosition, color, 1, -2);
             if (tempMove != null) {
                 validMoves.add(tempMove);
@@ -32,7 +32,7 @@ public class KnightMoveStrategy implements MoveStrategy {
         }
 
         // CHECK DOWN 2 LEFT IF POSSIBLE
-        if ((myPosition.getColumn() > 1) && (myPosition.getRow() > 1)) {
+        if ((myPosition.getColumn() > 1) && (myPosition.getRow() > 2)) {
             ChessMove tempMove = move_one(board, myPosition, color, -1, -2);
             if (tempMove != null) {
                 validMoves.add(tempMove);
@@ -40,7 +40,7 @@ public class KnightMoveStrategy implements MoveStrategy {
         }
 
         // CHECK UP 1 RIGHT IF POSSIBLE
-        if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() < BOARD_HEIGHT)) {
+        if ((myPosition.getColumn() < BOARD_WIDTH - 1) && (myPosition.getRow() < BOARD_HEIGHT)) {
             ChessMove tempMove = move_one(board, myPosition, color, 2, 1);
             if (tempMove != null) {
                 validMoves.add(tempMove);
@@ -48,7 +48,7 @@ public class KnightMoveStrategy implements MoveStrategy {
         }
 
         // CHECK UP 1 LEFT IF POSSIBLE
-        if ((myPosition.getColumn() > 1) && (myPosition.getRow() < BOARD_HEIGHT)) {
+        if ((myPosition.getColumn() > 2) && (myPosition.getRow() < BOARD_HEIGHT)) {
             ChessMove tempMove = move_one(board, myPosition, color, -2, 1);
             if (tempMove != null) {
                 validMoves.add(tempMove);
@@ -56,7 +56,7 @@ public class KnightMoveStrategy implements MoveStrategy {
         }
 
         // CHECK DOWN 1 RIGHT IF POSSIBLE
-        if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() > 1)) {
+        if ((myPosition.getColumn() < BOARD_WIDTH - 1) && (myPosition.getRow() > 1)) {
             ChessMove tempMove = move_one(board, myPosition, color, 2, -1);
             if (tempMove != null) {
                 validMoves.add(tempMove);
@@ -64,7 +64,7 @@ public class KnightMoveStrategy implements MoveStrategy {
         }
 
         // CHECK DOWN 1 LEFT IF POSSIBLE
-        if ((myPosition.getColumn() > 1) && (myPosition.getRow() > 1)) {
+        if ((myPosition.getColumn() > 2) && (myPosition.getRow() > 1)) {
             ChessMove tempMove = move_one(board, myPosition, color, -2, -1);
             if (tempMove != null) {
                 validMoves.add(tempMove);

@@ -64,7 +64,6 @@ public class ChessPiece {
                 tempMoves = bishop.getValidMoves(myPosition, board, pieceColor);
                 validMoves.addAll(tempMoves);
                 break;
-
             case KING:
                 KingMoveStrategy king = new KingMoveStrategy();
                 tempMoves = king.getValidMoves(myPosition, board, pieceColor);
