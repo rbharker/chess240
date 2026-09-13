@@ -1,6 +1,8 @@
 package chess;
 
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class PawnMoveStrategy implements MoveStrategy {
@@ -15,34 +17,34 @@ public class PawnMoveStrategy implements MoveStrategy {
             // you can capture if so
             // check right
             if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() < BOARD_HEIGHT)) {
-                ChessMove tempMove = movePawnCapture(board, myPosition, color, 1, 1);
+                Collection<ChessMove> tempMove = movePawnCapture(board, myPosition, color, 1, 1);
                 if (tempMove != null) {
-                    validMoves.add(tempMove);
+                    validMoves.addAll(tempMove);
                 }
             }
 
             // check left
             if ((myPosition.getColumn() > 1) && (myPosition.getRow() < BOARD_HEIGHT)) {
-                ChessMove tempMove = movePawnCapture(board, myPosition, color, -1, 1);
+                Collection<ChessMove> tempMove = movePawnCapture(board, myPosition, color, -1, 1);
                 if (tempMove != null) {
-                    validMoves.add(tempMove);
+                    validMoves.addAll(tempMove);
                 }
             }
 
             // if you're in position zero you can move forward one or two
             if (myPosition.getRow() == 2) {
                 // move two forward
-                ChessMove tempMove = movePawnForward(board, myPosition, 2);
+                Collection<ChessMove> tempMove = movePawnForward(board, myPosition, color, 2);
                 if (tempMove != null) {
-                    validMoves.add(tempMove);
+                    validMoves.addAll(tempMove);
                 }
             }
 
             // if you're in any other position
             if ((myPosition.getRow() < BOARD_HEIGHT)) {
-                ChessMove tempMove = movePawnForward(board, myPosition, 1);
+                Collection<ChessMove> tempMove = movePawnForward(board, myPosition, color, 1);
                 if (tempMove != null) {
-                    validMoves.add(tempMove);
+                    validMoves.addAll(tempMove);
                 }
             }
         }
@@ -54,34 +56,34 @@ public class PawnMoveStrategy implements MoveStrategy {
             // you can capture if so
             // check right
             if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() > 1)) {
-                ChessMove tempMove = movePawnCapture(board, myPosition, color, 1, -1);
+                Collection<ChessMove> tempMove = movePawnCapture(board, myPosition, color, 1, -1);
                 if (tempMove != null) {
-                    validMoves.add(tempMove);
+                    validMoves.addAll(tempMove);
                 }
             }
 
             // check left
             if ((myPosition.getColumn() > 1) && (myPosition.getRow() > 1)) {
-                ChessMove tempMove = movePawnCapture(board, myPosition, color, -1, -1);
+                Collection<ChessMove> tempMove = movePawnCapture(board, myPosition, color, -1, -1);
                 if (tempMove != null) {
-                    validMoves.add(tempMove);
+                    validMoves.addAll(tempMove);
                 }
             }
 
             // if you're in position zero you can move forward one or two
             if (myPosition.getRow() == 7) {
                 // move two forward
-                ChessMove tempMove = movePawnForward(board, myPosition, -2);
+                Collection<ChessMove> tempMove = movePawnForward(board, myPosition, color,-2);
                 if (tempMove != null) {
-                    validMoves.add(tempMove);
+                    validMoves.addAll(tempMove);
                 }
             }
 
             // if you're in any other position
             if ((myPosition.getRow() > 1)) {
-                ChessMove tempMove = movePawnForward(board, myPosition, -1);
+                Collection<ChessMove> tempMove = movePawnForward(board, myPosition, color,-1);
                 if (tempMove != null) {
-                    validMoves.add(tempMove);
+                    validMoves.addAll(tempMove);
                 }
             }
         }
@@ -89,11 +91,13 @@ public class PawnMoveStrategy implements MoveStrategy {
         return validMoves;
     }
 
-    private ChessMove movePawnForward(ChessBoard board, ChessPosition myPosition, int spaces) {
+    private Collection<ChessMove> movePawnForward(ChessBoard board, ChessPosition myPosition,
+                                                  ChessGame.TeamColor color, int spaces) {
         int tempCol = myPosition.getColumn();
         int tempRow = myPosition.getRow() + spaces;
         ChessPosition tempPos = new ChessPosition(tempRow, tempCol);
         ChessMove validMove = new ChessMove(myPosition, tempPos, null);
+        Collection<ChessMove> validMoves = new ArrayList<>();
         switch(spaces) {
             case 2, -2:
                 int prevRow = myPosition.getRow() + (spaces/2);
@@ -103,7 +107,8 @@ public class PawnMoveStrategy implements MoveStrategy {
                     return null;
                 }
                 else {
-                    return validMove;
+                    validMoves.add(validMove);
+                    return validMoves;
                 }
             default:
                 // if the space is occupied
@@ -111,18 +116,34 @@ public class PawnMoveStrategy implements MoveStrategy {
                     return null;
                 }
                 else {
-                    return validMove;
+                    if ((tempRow == 8 && color == ChessGame.TeamColor.WHITE) ||
+                            (tempRow == 1 && color == ChessGame.TeamColor.BLACK)) {
+                        ChessMove validMove1 = new ChessMove(myPosition, tempPos, ChessPiece.PieceType.QUEEN);
+                        ChessMove validMove2 = new ChessMove(myPosition, tempPos, ChessPiece.PieceType.KNIGHT);
+                        ChessMove validMove3 = new ChessMove(myPosition, tempPos, ChessPiece.PieceType.BISHOP);
+                        ChessMove validMove4 = new ChessMove(myPosition, tempPos, ChessPiece.PieceType.ROOK);
+                        validMoves.add(validMove1);
+                        validMoves.add(validMove2);
+                        validMoves.add(validMove3);
+                        validMoves.add(validMove4);
+                        return validMoves;
+                    }
+                    else {
+                        validMoves.add(validMove);
+                        return validMoves;
+                    }
                 }
 
         }
     }
 
-    private ChessMove movePawnCapture(ChessBoard board, ChessPosition myPosition,
+    private Collection<ChessMove> movePawnCapture(ChessBoard board, ChessPosition myPosition,
                                       ChessGame.TeamColor color, int x, int y) {
         int tempCol = myPosition.getColumn() + x;
         int tempRow = myPosition.getRow() + y;
         ChessPosition tempPos = new ChessPosition(tempRow, tempCol);
         ChessMove validMove = new ChessMove(myPosition, tempPos, null);
+        Collection<ChessMove> validMoves = new ArrayList<>();
         // if the space is occupied
         if (board.getPiece(tempPos) != null) {
             // if the piece is your color you can't capture
@@ -131,7 +152,23 @@ public class PawnMoveStrategy implements MoveStrategy {
             }
             // if the piece is the other color you can capture
             else {
-                return validMove;
+                // if you're capturing on the end of the board you can be promoted
+                if ((tempRow == 8 && color == ChessGame.TeamColor.WHITE) ||
+                        (tempRow == 1 && color == ChessGame.TeamColor.BLACK)) {
+                    ChessMove validMove1 = new ChessMove(myPosition, tempPos, ChessPiece.PieceType.QUEEN);
+                    ChessMove validMove2 = new ChessMove(myPosition, tempPos, ChessPiece.PieceType.KNIGHT);
+                    ChessMove validMove3 = new ChessMove(myPosition, tempPos, ChessPiece.PieceType.BISHOP);
+                    ChessMove validMove4 = new ChessMove(myPosition, tempPos, ChessPiece.PieceType.ROOK);
+                    validMoves.add(validMove1);
+                    validMoves.add(validMove2);
+                    validMoves.add(validMove3);
+                    validMoves.add(validMove4);
+                    return validMoves;
+                }
+                else {
+                    validMoves.add(validMove);
+                    return validMoves;
+                }
             }
         }
         // otherwise the space is free and you cannot capture
