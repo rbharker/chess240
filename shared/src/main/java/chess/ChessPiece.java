@@ -12,8 +12,8 @@ import java.util.Objects;
  */
 public class ChessPiece {
 
-    public final ChessGame.TeamColor pieceColor;
-    public final PieceType type;
+    private final ChessGame.TeamColor pieceColor;
+    private final PieceType type;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
@@ -54,45 +54,40 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-
         Collection<ChessMove> validMoves = new ArrayList<>();
-        Collection<ChessMove> tempMoves;
-
         switch (type) {
             case BISHOP:
                 BishopMoveStrategy bishop = new BishopMoveStrategy();
-                tempMoves = bishop.getValidMoves(myPosition, board, pieceColor);
-                validMoves.addAll(tempMoves);
+                validMoves.addAll(bishop.validMoves(pieceColor, board, myPosition));
                 break;
-            case KING:
-                KingMoveStrategy king = new KingMoveStrategy();
-                tempMoves = king.getValidMoves(myPosition, board, pieceColor);
-                validMoves.addAll(tempMoves);
-                break;
-           case QUEEN:
-               QueenMoveStrategy queen = new QueenMoveStrategy();
-               tempMoves = queen.getValidMoves(myPosition, board, pieceColor);
-               validMoves.addAll(tempMoves);
-                break;
-            case PAWN:
-                PawnMoveStrategy pawn = new PawnMoveStrategy();
-                tempMoves = pawn.getValidMoves(myPosition, board, pieceColor);
-                validMoves.addAll(tempMoves);
-                break;
-            case KNIGHT:
-                KnightMoveStrategy knight = new KnightMoveStrategy();
-                tempMoves = knight.getValidMoves(myPosition, board, pieceColor);
-                validMoves.addAll(tempMoves);
-                break;
+
             case ROOK:
                 RookMoveStrategy rook = new RookMoveStrategy();
-                tempMoves = rook.getValidMoves(myPosition, board, pieceColor);
-                validMoves.addAll(tempMoves);
+                validMoves.addAll(rook.validMoves(pieceColor, board, myPosition));
+                break;
+
+            case KNIGHT:
+                KnightMoveStrategy knight = new KnightMoveStrategy();
+                validMoves.addAll(knight.validMoves(pieceColor, board, myPosition));
+                break;
+
+            case KING:
+                KingMoveStrategy king = new KingMoveStrategy();
+                validMoves.addAll(king.validMoves(pieceColor, board, myPosition));
+                break;
+
+            case QUEEN:
+                QueenMoveStrategy queen = new QueenMoveStrategy();
+                validMoves.addAll(queen.validMoves(pieceColor, board, myPosition));
+                break;
+
+            case PAWN:
+                PawnMoveStrategy pawn = new PawnMoveStrategy();
+                validMoves.addAll(pawn.validMoves(pieceColor, board, myPosition));
                 break;
         }
 
         return validMoves;
-
     }
 
     @Override

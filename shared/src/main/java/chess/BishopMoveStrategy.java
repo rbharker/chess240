@@ -2,36 +2,16 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
-public class BishopMoveStrategy implements MoveStrategy {
-    List<ChessMove> validMoves = new ArrayList<>();
+public class BishopMoveStrategy implements MoveStrategy{
     @Override
-    public List<ChessMove> getValidMoves(ChessPosition myPosition, ChessBoard board, ChessGame.TeamColor color) {
+    public Collection<ChessMove> validMoves(ChessGame.TeamColor color, ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> validMoves = new ArrayList<>();
 
-        // CHECK HOW FAR UP RIGHT IF POSSIBLE
-        if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() < BOARD_HEIGHT)) {
-            Collection<ChessMove> tempMoves = move_multiple(board, myPosition, color, 1, 1);
-            validMoves.addAll(tempMoves);
-        }
-
-        // CHECK HOW FAR UP LEFT IF POSSIBLE
-        if ((myPosition.getColumn() > 1) && (myPosition.getRow() < BOARD_HEIGHT)) {
-            Collection<ChessMove> tempMoves = move_multiple(board, myPosition, color, -1, 1);
-            validMoves.addAll(tempMoves);
-        }
-
-        // CHECK HOW FAR DOWN RIGHT IF POSSIBLE
-        if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() > 1)) {
-            Collection<ChessMove> tempMoves = move_multiple(board, myPosition, color, 1, -1);
-            validMoves.addAll(tempMoves);
-        }
-
-        // CHECK HOW FAR DOWN LEFT IF POSSIBLE
-        if ((myPosition.getColumn() > 1) && (myPosition.getRow() > 1)) {
-            Collection<ChessMove> tempMoves = move_multiple(board, myPosition, color, -1, -1);
-            validMoves.addAll(tempMoves);
-        }
+        validMoves.addAll(moveMultiple(color, 1, 1, myPosition, board));
+        validMoves.addAll(moveMultiple(color, -1, 1, myPosition, board));
+        validMoves.addAll(moveMultiple(color, 1, -1, myPosition, board));
+        validMoves.addAll(moveMultiple(color, -1, -1, myPosition, board));
 
         return validMoves;
     }

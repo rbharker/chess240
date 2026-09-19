@@ -1,73 +1,36 @@
 package chess;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 public class KingMoveStrategy implements MoveStrategy {
-    List<ChessMove> validMoves = new ArrayList<>();
     @Override
-    public List<ChessMove> getValidMoves(ChessPosition myPosition, ChessBoard board, ChessGame.TeamColor color) {
-        // CHECK UP RIGHT IF POSSIBLE
-        if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() < BOARD_HEIGHT)) {
-            ChessMove tempMove = move_one(board, myPosition, color, 1, 1);
-            if (tempMove != null) {
-                validMoves.add(tempMove);
-            }
-        }
+    public Collection<ChessMove> validMoves(ChessGame.TeamColor color, ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> validMoves = new ArrayList<>();
 
-        // CHECK UP LEFT IF POSSIBLE
-        if ((myPosition.getColumn() > 1) && (myPosition.getRow() < BOARD_HEIGHT)) {
-            ChessMove tempMove = move_one(board, myPosition, color, -1, 1);
-            if (tempMove != null) {
-                validMoves.add(tempMove);
-            }
+        if (moveOne(color, 1, 1, myPosition, board) != null) {
+            validMoves.add(moveOne(color, 1, 1, myPosition, board));
         }
-
-        // CHECK DOWN RIGHT IF POSSIBLE
-        if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() > 1)) {
-            ChessMove tempMove = move_one(board, myPosition, color, 1, -1);
-            if (tempMove != null) {
-                validMoves.add(tempMove);
-            }
+        if (moveOne(color, -1, -1, myPosition, board) != null) {
+            validMoves.add(moveOne(color, -1, -1, myPosition, board));
         }
-
-        // CHECK DOWN LEFT IF POSSIBLE
-        if ((myPosition.getColumn() > 1) && (myPosition.getRow() > 1)) {
-            ChessMove tempMove = move_one(board, myPosition, color, -1, -1);
-            if (tempMove != null) {
-                validMoves.add(tempMove);
-            }
+        if (moveOne(color, 1, -1, myPosition, board) != null) {
+            validMoves.add(moveOne(color, 1, -1, myPosition, board));
         }
-
-        // CHECK UP IF POSSIBLE
-        if ((myPosition.getRow() < BOARD_HEIGHT)) {
-            ChessMove tempMove = move_one(board, myPosition, color, 0, 1);
-            if (tempMove != null) {
-                validMoves.add(tempMove);
-            }
+        if (moveOne(color, -1, 1, myPosition, board) != null) {
+            validMoves.add(moveOne(color, -1, 1, myPosition, board));
         }
-        // CHECK DOWN IF POSSIBLE
-        if ((myPosition.getRow() > 1)) {
-            ChessMove tempMove = move_one(board, myPosition, color, 0, -1);
-            if (tempMove != null) {
-                validMoves.add(tempMove);
-            }
+        if (moveOne(color, 1, 0, myPosition, board) != null) {
+            validMoves.add(moveOne(color, 1, 0, myPosition, board));
         }
-
-        // CHECK RIGHT IF POSSIBLE
-        if ((myPosition.getColumn() < BOARD_WIDTH)) {
-            ChessMove tempMove = move_one(board, myPosition, color, 1, 0);
-            if (tempMove != null) {
-                validMoves.add(tempMove);
-            }
+        if (moveOne(color, -1, 0, myPosition, board) != null) {
+            validMoves.add(moveOne(color, -1, 0, myPosition, board));
         }
-
-        // CHECK LEFT IF POSSIBLE
-        if ((myPosition.getColumn() > 1)) {
-            ChessMove tempMove = move_one(board, myPosition, color,-1, 0);
-            if (tempMove != null) {
-                validMoves.add(tempMove);
-            }
+        if (moveOne(color, 0, 1, myPosition, board) != null) {
+            validMoves.add(moveOne(color, 0, 1, myPosition, board));
+        }
+        if (moveOne(color, 0, -1, myPosition, board) != null) {
+            validMoves.add(moveOne(color, 0, -1, myPosition, board));
         }
 
         return validMoves;

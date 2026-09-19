@@ -1,177 +1,177 @@
 package chess;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class PawnMoveStrategy implements MoveStrategy {
     @Override
-    public List<ChessMove> getValidMoves(ChessPosition myPosition, ChessBoard board, ChessGame.TeamColor color) {
-        List<ChessMove> validMoves = new ArrayList<>();
+    public Collection<ChessMove> validMoves(ChessGame.TeamColor color, ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> validMoves = new ArrayList<>();
 
-        // WHITE PAWN MOVES
+        // white moves
         if (color == ChessGame.TeamColor.WHITE) {
-
-            // check if there is someone diagonally forward
-            // you can capture if so
-            // check right
-            if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() < BOARD_HEIGHT)) {
-                Collection<ChessMove> tempMove = movePawnCapture(board, myPosition, color, 1, 1);
-                if (tempMove != null) {
-                    validMoves.addAll(tempMove);
-                }
-            }
-
-            // check left
-            if ((myPosition.getColumn() > 1) && (myPosition.getRow() < BOARD_HEIGHT)) {
-                Collection<ChessMove> tempMove = movePawnCapture(board, myPosition, color, -1, 1);
-                if (tempMove != null) {
-                    validMoves.addAll(tempMove);
-                }
-            }
-
-            // if you're in position zero you can move forward one or two
             if (myPosition.getRow() == 2) {
-                // move two forward
-                Collection<ChessMove> tempMove = movePawnForward(board, myPosition, color, 2);
-                if (tempMove != null) {
-                    validMoves.addAll(tempMove);
+                if (movePawn(board, myPosition, 2) != null) {
+                    validMoves.addAll(movePawn(board, myPosition, 2));
+                }
+                if (movePawn(board, myPosition, 1) != null) {
+                    validMoves.addAll(movePawn(board, myPosition, 1));
                 }
             }
-
-            // if you're in any other position
-            if ((myPosition.getRow() < BOARD_HEIGHT)) {
-                Collection<ChessMove> tempMove = movePawnForward(board, myPosition, color, 1);
-                if (tempMove != null) {
-                    validMoves.addAll(tempMove);
+            else {
+                if (movePawn(board, myPosition, 1) != null) {
+                    validMoves.addAll(movePawn(board, myPosition, 1));
                 }
+            }
+            if (capturePawn(color, board, myPosition, 1, 1) != null) {
+                validMoves.addAll(capturePawn(color, board, myPosition, 1, 1)) ;
+            }
+            if (capturePawn(color, board, myPosition, -1, 1) != null) {
+                validMoves.addAll(capturePawn(color, board, myPosition, -1, 1)) ;
             }
         }
-
-        // BLACK PAWN MOVES
-        if (color == ChessGame.TeamColor.BLACK) {
-
-            // check if there is someone diagonally forward
-            // you can capture if so
-            // check right
-            if ((myPosition.getColumn() < BOARD_WIDTH) && (myPosition.getRow() > 1)) {
-                Collection<ChessMove> tempMove = movePawnCapture(board, myPosition, color, 1, -1);
-                if (tempMove != null) {
-                    validMoves.addAll(tempMove);
-                }
-            }
-
-            // check left
-            if ((myPosition.getColumn() > 1) && (myPosition.getRow() > 1)) {
-                Collection<ChessMove> tempMove = movePawnCapture(board, myPosition, color, -1, -1);
-                if (tempMove != null) {
-                    validMoves.addAll(tempMove);
-                }
-            }
-
-            // if you're in position zero you can move forward one or two
+        // black moves
+        else if (color == ChessGame.TeamColor.BLACK) {
             if (myPosition.getRow() == 7) {
-                // move two forward
-                Collection<ChessMove> tempMove = movePawnForward(board, myPosition, color,-2);
-                if (tempMove != null) {
-                    validMoves.addAll(tempMove);
+                if (movePawn(board, myPosition, -2) != null) {
+                    validMoves.addAll(movePawn(board, myPosition, -2));
+                }
+                if (movePawn(board, myPosition, -1) != null) {
+                    validMoves.addAll(movePawn(board, myPosition, -1));
                 }
             }
-
-            // if you're in any other position
-            if ((myPosition.getRow() > 1)) {
-                Collection<ChessMove> tempMove = movePawnForward(board, myPosition, color,-1);
-                if (tempMove != null) {
-                    validMoves.addAll(tempMove);
+            else {
+                if (movePawn(board, myPosition, -1) != null) {
+                    validMoves.addAll(movePawn(board, myPosition, -1));
                 }
+            }
+            if (capturePawn(color, board, myPosition, 1, -1) != null) {
+                validMoves.addAll(capturePawn(color, board, myPosition, 1, -1)) ;
+            }
+            if (capturePawn(color, board, myPosition, -1, -1) != null) {
+                validMoves.addAll(capturePawn(color, board, myPosition, -1, -1)) ;
             }
         }
 
         return validMoves;
     }
 
-    private Collection<ChessMove> movePawnForward(ChessBoard board, ChessPosition myPosition,
-                                                  ChessGame.TeamColor color, int spaces) {
-        int tempCol = myPosition.getColumn();
-        int tempRow = myPosition.getRow() + spaces;
-        ChessPosition tempPos = new ChessPosition(tempRow, tempCol);
-        ChessMove validMove = new ChessMove(myPosition, tempPos, null);
+    Collection<ChessMove> movePawn(ChessBoard board, ChessPosition myPosition, int spaces) {
+        int tempRow;
+        ChessPosition tempPosition;
+        ChessMove validMove;
         Collection<ChessMove> validMoves = new ArrayList<>();
         switch(spaces) {
             case 2, -2:
-                int prevRow = myPosition.getRow() + (spaces/2);
-                ChessPosition previousPosition = new ChessPosition(prevRow, tempCol);
-                // if the space is occupied or the space before is occupied
-                if ((board.getPiece(tempPos) != null) || (board.getPiece(previousPosition) != null)) {
-                    return null;
+                tempRow = myPosition.getRow() + spaces;
+                tempPosition = new ChessPosition(tempRow, myPosition.getColumn());
+                validMove = new ChessMove(myPosition, tempPosition, null);
+                // if you're staying in the board limits
+                if ((tempRow <= BoardHeight) &&
+                        (tempRow >= 1)) {
+                    // if there's a piece there
+                    if (board.getPiece(tempPosition) != null) {
+                        // if there is a piece there, you can't move there
+                        return null;
+                    }
+                    // if there's not a piece there you can move there
+                    // only if the space before is also empty
+                    else {
+                        tempRow = myPosition.getRow() + (spaces/2);
+                        tempPosition = new ChessPosition(tempRow, myPosition.getColumn());
+                        if (board.getPiece(tempPosition) != null) {
+                            // if there is a piece there, you can't move there
+                            return null;
+                        }
+                        // if there's not a piece there you can move there
+                        // only if the space before is also empty
+                        else {
+                            validMoves.add(validMove);
+                            return validMoves;
+                        }
+                    }
                 }
                 else {
-                    validMoves.add(validMove);
-                    return validMoves;
+                    return null;
                 }
             default:
-                // if the space is occupied
-                if (board.getPiece(tempPos) != null) {
-                    return null;
+                tempRow = myPosition.getRow() + spaces;
+                tempPosition = new ChessPosition(tempRow, myPosition.getColumn());
+                validMove = new ChessMove(myPosition, tempPosition, null);
+                // if you're staying in the board limits
+                if ((tempRow <= BoardHeight) &&
+                        (tempRow >= 1)) {
+                    // if there's a piece there
+                    if (board.getPiece(tempPosition) != null) {
+                        // if there is a piece there, you can't move there
+                        return null;
+                    }
+                    // if there's not a piece there you can move there
+                    else {
+                        if (tempRow == 8 || tempRow == 1) {
+                            ChessMove validMove1 = new ChessMove(myPosition, tempPosition, ChessPiece.PieceType.ROOK);
+                            ChessMove validMove2 = new ChessMove(myPosition, tempPosition, ChessPiece.PieceType.BISHOP);
+                            ChessMove validMove3 = new ChessMove(myPosition, tempPosition, ChessPiece.PieceType.KNIGHT);
+                            ChessMove validMove4 = new ChessMove(myPosition, tempPosition, ChessPiece.PieceType.QUEEN);
+                            validMoves.add(validMove1);
+                            validMoves.add(validMove2);
+                            validMoves.add(validMove3);
+                            validMoves.add(validMove4);
+                        }
+                        else {
+                            validMoves.add(validMove);
+                        }
+                        return validMoves;
+                    }
                 }
                 else {
-                    if ((tempRow == 8 && color == ChessGame.TeamColor.WHITE) ||
-                            (tempRow == 1 && color == ChessGame.TeamColor.BLACK)) {
-                        ChessMove validMove1 = new ChessMove(myPosition, tempPos, ChessPiece.PieceType.QUEEN);
-                        ChessMove validMove2 = new ChessMove(myPosition, tempPos, ChessPiece.PieceType.KNIGHT);
-                        ChessMove validMove3 = new ChessMove(myPosition, tempPos, ChessPiece.PieceType.BISHOP);
-                        ChessMove validMove4 = new ChessMove(myPosition, tempPos, ChessPiece.PieceType.ROOK);
-                        validMoves.add(validMove1);
-                        validMoves.add(validMove2);
-                        validMoves.add(validMove3);
-                        validMoves.add(validMove4);
-                        return validMoves;
-                    }
-                    else {
-                        validMoves.add(validMove);
-                        return validMoves;
-                    }
+                    return null;
                 }
-
         }
     }
 
-    private Collection<ChessMove> movePawnCapture(ChessBoard board, ChessPosition myPosition,
-                                      ChessGame.TeamColor color, int x, int y) {
-        int tempCol = myPosition.getColumn() + x;
+    Collection<ChessMove> capturePawn(ChessGame.TeamColor color, ChessBoard board, ChessPosition myPosition, int x, int y) {
         int tempRow = myPosition.getRow() + y;
-        ChessPosition tempPos = new ChessPosition(tempRow, tempCol);
-        ChessMove validMove = new ChessMove(myPosition, tempPos, null);
+        int tempCol = myPosition.getColumn() + x;
         Collection<ChessMove> validMoves = new ArrayList<>();
-        // if the space is occupied
-        if (board.getPiece(tempPos) != null) {
-            // if the piece is your color you can't capture
-            if (board.getPiece(tempPos).pieceColor == color) {
+
+        // if you're staying in the board limits
+        if ((tempCol <= BoardWidth) &&
+                (tempCol >= 1) &&
+                (tempRow <= BoardHeight) &&
+                (tempRow >= 1)) {
+
+            ChessPosition tempPosition = new ChessPosition(tempRow, tempCol);
+            ChessMove validMove = new ChessMove(myPosition, tempPosition, null);
+            // if there's a piece there
+            if (board.getPiece(tempPosition) != null) {
+                // if the piece is your color, you can't move there
+                if (board.getPiece(tempPosition).getTeamColor() == color) {
+                    return null;
+                }
+                // if the piece is the other color, you can move there
+                else {
+                    if (tempRow == 8 || tempRow == 1) {
+                        ChessMove validMove1 = new ChessMove(myPosition, tempPosition, ChessPiece.PieceType.ROOK);
+                        ChessMove validMove2 = new ChessMove(myPosition, tempPosition, ChessPiece.PieceType.BISHOP);
+                        ChessMove validMove3 = new ChessMove(myPosition, tempPosition, ChessPiece.PieceType.KNIGHT);
+                        ChessMove validMove5 = new ChessMove(myPosition, tempPosition, ChessPiece.PieceType.QUEEN);
+                        validMoves.add(validMove1);
+                        validMoves.add(validMove2);
+                        validMoves.add(validMove3);
+                        validMoves.add(validMove5);
+                    }
+                    else {
+                        validMoves.add(validMove);
+                    }
+                    return validMoves;
+                }
+            }
+            // if there's not a piece there you cannot move there
+            else {
                 return null;
             }
-            // if the piece is the other color you can capture
-            else {
-                // if you're capturing on the end of the board you can be promoted
-                if ((tempRow == 8 && color == ChessGame.TeamColor.WHITE) ||
-                        (tempRow == 1 && color == ChessGame.TeamColor.BLACK)) {
-                    ChessMove validMove1 = new ChessMove(myPosition, tempPos, ChessPiece.PieceType.QUEEN);
-                    ChessMove validMove2 = new ChessMove(myPosition, tempPos, ChessPiece.PieceType.KNIGHT);
-                    ChessMove validMove3 = new ChessMove(myPosition, tempPos, ChessPiece.PieceType.BISHOP);
-                    ChessMove validMove4 = new ChessMove(myPosition, tempPos, ChessPiece.PieceType.ROOK);
-                    validMoves.add(validMove1);
-                    validMoves.add(validMove2);
-                    validMoves.add(validMove3);
-                    validMoves.add(validMove4);
-                    return validMoves;
-                }
-                else {
-                    validMoves.add(validMove);
-                    return validMoves;
-                }
-            }
         }
-        // otherwise the space is free and you cannot capture
         else {
             return null;
         }

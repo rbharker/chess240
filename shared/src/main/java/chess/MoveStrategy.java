@@ -2,67 +2,83 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
-// Logic is encapsulated in specific strategy objects
-interface MoveStrategy {
-    int BOARD_HEIGHT = 8;
-    int BOARD_WIDTH = 8;
-    List<ChessMove> getValidMoves(ChessPosition position, ChessBoard board, ChessGame.TeamColor color);
+public interface MoveStrategy {
 
-    default ChessMove move_one(ChessBoard board, ChessPosition myPosition,
-                                              ChessGame.TeamColor color, int x, int y) {
-        int tempCol = myPosition.getColumn() + x;
+    int BoardHeight = 8;
+    int BoardWidth = 8;
+
+    Collection<ChessMove> validMoves(ChessGame.TeamColor color, ChessBoard board, ChessPosition myPosition);
+
+    default ChessMove moveOne(ChessGame.TeamColor color, int x, int y, ChessPosition myPosition, ChessBoard board) {
         int tempRow = myPosition.getRow() + y;
-        ChessPosition tempPos = new ChessPosition(tempRow, tempCol);
-        ChessMove validMove = new ChessMove(myPosition, tempPos, null);
-        // if the space is occupied
-        if (board.getPiece(tempPos) != null) {
-            // if the piece is your color you can't move there
-            if (board.getPiece(tempPos).pieceColor == color) {
-                return null;
+        int tempCol = myPosition.getColumn() + x;
+
+        // if you're staying in the board limits
+        if ((tempCol <= BoardWidth) &&
+                (tempCol >= 1) &&
+                (tempRow <= BoardHeight) &&
+                (tempRow >= 1)) {
+
+            ChessPosition tempPosition = new ChessPosition(tempRow, tempCol);
+            ChessMove validMove = new ChessMove(myPosition, tempPosition, null);
+            // if there's a piece there
+            if (board.getPiece(tempPosition) != null) {
+                // if the piece is your color, you can't move there
+                if (board.getPiece(tempPosition).getTeamColor() == color) {
+                    return null;
+                }
+                // if the piece is the other color, you can move there
+                else {
+                    return validMove;
+                }
             }
-            // if the piece is the other color you can move there
+            // if there's not a piece there you can move there
             else {
                 return validMove;
             }
         }
-        // otherwise the space is free and you can move
         else {
-            return validMove;
+            return null;
         }
     }
 
-    default Collection<ChessMove> move_multiple(ChessBoard board, ChessPosition myPosition,
-                                                ChessGame.TeamColor color, int x, int y) {
-        int tempCol = myPosition.getColumn() + x;
+    default Collection<ChessMove> moveMultiple(ChessGame.TeamColor color, int x, int y, ChessPosition myPosition, ChessBoard board) {
         int tempRow = myPosition.getRow() + y;
+        int tempCol = myPosition.getColumn() + x;
         Collection<ChessMove> validMoves = new ArrayList<>();
-        // while you're still on the board
-        while ((tempCol <= BOARD_WIDTH) && (tempRow <= BOARD_HEIGHT)
-                && (tempCol > 0) && (tempRow > 0)) {
-            ChessPosition tempPos = new ChessPosition(tempRow, tempCol);
-            if (board.getPiece(tempPos) != null) {
-                // if the piece is your color you can't move there
-                // the farthest you can go this way is the previous iteration
-                if (board.getPiece(tempPos).pieceColor == color) {
-                    break;
+
+        // if you're staying in the board limits
+        while ((tempCol <= BoardWidth) &&
+                (tempCol >= 1) &&
+                (tempRow <= BoardHeight) &&
+                (tempRow >= 1)) {
+
+            ChessPosition tempPosition = new ChessPosition(tempRow, tempCol);
+            ChessMove validMove = new ChessMove(myPosition, tempPosition, null);
+            // if there's a piece there
+            if (board.getPiece(tempPosition) != null) {
+                // if the piece is your color, you can't move there
+                // break the loop and return the moves already found
+                if (board.getPiece(tempPosition).getTeamColor() == color) {
+                    return validMoves;
                 }
-                // if the piece is the other color you can move there
+                // if the piece is the other color, you can move there
+                // add the move to collection
+                // break the loop and return the moves found
                 else {
-                    ChessMove validMove = new ChessMove(myPosition, tempPos, null);
                     validMoves.add(validMove);
-                    break;
+                    return validMoves;
                 }
             }
+            // if there's not a piece there you can move there
+            // keep iterating through the loop
             else {
-                ChessMove validMove = new ChessMove(myPosition, tempPos, null);
                 validMoves.add(validMove);
             }
             tempCol += x;
             tempRow += y;
         }
-
         return validMoves;
     }
 }
