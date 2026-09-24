@@ -59,7 +59,6 @@ public class ChessGame {
         if (piece == null) {
             return null;
         }
-        setTeamTurn(piece.getTeamColor());
         Collection<ChessMove> possibleValidMoves = piece.pieceMoves(currentBoard, startPosition);
         if (isInStalemate(currentTurn)) {
             return validMoves;
@@ -82,17 +81,48 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
+        boolean inValidMoves = false;
+        if (validMoves == null) {throw new InvalidMoveException("Invalid move!");}
+        for (ChessMove tempMove : validMoves) {
+            if (tempMove.equals(move)) {
+                inValidMoves = true;
+            }
+        }
+        ChessPiece movePiece;
+        ChessPiece capturePiece;
+        ChessGame.TeamColor pieceColor;
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
-        ChessPiece movePiece = currentBoard.getPiece(start);
-        ChessPiece capturePiece = currentBoard.getPiece(end);
+        if (currentBoard.getPiece(start) != null) {
+            movePiece = currentBoard.getPiece(start);
+            capturePiece = currentBoard.getPiece(end);
+            pieceColor = currentBoard.getPiece(move.getStartPosition()).getTeamColor();
+        }
+        else {
+            throw new InvalidMoveException("Invalid move!");
+        }
+        if (inValidMoves && (pieceColor == currentTurn) && (movePiece != null)) {
+            currentBoard.addPiece(start, null);
+            currentBoard.addPiece(end, movePiece);
 
-        currentBoard.addPiece(start, null);
-        currentBoard.addPiece(end, movePiece);
-
-        if (isInCheck(getTeamTurn())) {
-            currentBoard.addPiece(start, movePiece);
-            currentBoard.addPiece(end, capturePiece);
+            if (isInCheck(getTeamTurn())) {
+                currentBoard.addPiece(start, movePiece);
+                currentBoard.addPiece(end, capturePiece);
+                throw new InvalidMoveException("Invalid move!");
+            }
+            if (move.getPromotionPiece() != null) {
+                ChessPiece promotion = new ChessPiece(getTeamTurn(), move.getPromotionPiece());
+                currentBoard.addPiece(end, promotion);
+            }
+            if (currentTurn == TeamColor.BLACK) {
+                currentTurn = TeamColor.WHITE;
+            }
+            else {
+                currentTurn = TeamColor.BLACK;
+            }
+        }
+        else {
             throw new InvalidMoveException("Invalid move!");
         }
     }
