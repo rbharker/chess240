@@ -75,12 +75,27 @@ public class ChessBoard {
     }
 
     // returns the pieces of the opposing team
-    public Map<ChessPosition, ChessPiece> getPieces(ChessGame.TeamColor color) {
+    public Map<ChessPosition, ChessPiece> getOtherPieces(ChessGame.TeamColor color) {
         Map<ChessPosition, ChessPiece> pieces = new HashMap<>();
         for (int i = 0; i<8; i++) {
             for (int j=0; j<8; j++) {
-                if (board[i][j].getTeamColor() != color) {
-                    ChessPosition position = new ChessPosition(i, j);
+                if (board[i][j] != null && board[i][j].getTeamColor() != color) {
+                    ChessPosition position = new ChessPosition(i+1, j+1);
+                    pieces.put(position, board[i][j]);
+                }
+            }
+        }
+
+        return pieces;
+    }
+
+    // returns the pieces of your team
+    public Map<ChessPosition, ChessPiece> getMyPieces(ChessGame.TeamColor color) {
+        Map<ChessPosition, ChessPiece> pieces = new HashMap<>();
+        for (int i = 0; i<8; i++) {
+            for (int j=0; j<8; j++) {
+                if (board[i][j] != null && board[i][j].getTeamColor() == color) {
+                    ChessPosition position = new ChessPosition(i+1, j+1);
                     pieces.put(position, board[i][j]);
                 }
             }
@@ -93,9 +108,9 @@ public class ChessBoard {
         ChessPosition kingPosition = null;
         for (int i = 0; i<8; i++) {
             for (int j=0; j<8; j++) {
-                if (board[i][j].getTeamColor() == color) {
+                if (board[i][j] != null && board[i][j].getTeamColor() == color) {
                     if (board[i][j].getPieceType() == ChessPiece.PieceType.KING) {
-                        kingPosition = new ChessPosition(i, j);
+                        kingPosition = new ChessPosition(i+1, j+1);
                     }
                 }
             }

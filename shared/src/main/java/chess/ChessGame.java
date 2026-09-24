@@ -13,13 +13,13 @@ import java.util.Objects;
  */
 public class ChessGame {
 
-    public ChessGame() {
-
-    }
     // set default board
-    ChessBoard currentBoard = new ChessBoard();
+    private ChessBoard currentBoard = new ChessBoard();
     // set default color
-    ChessGame.TeamColor currentTurn = TeamColor.WHITE;
+    private ChessGame.TeamColor currentTurn = TeamColor.WHITE;
+    public ChessGame() {
+        currentBoard.resetBoard();
+    }
 
     /**
      * @return Which team's turn it is
@@ -59,9 +59,16 @@ public class ChessGame {
         if (piece == null) {
             return null;
         }
+        setTeamTurn(piece.getTeamColor());
         Collection<ChessMove> possibleValidMoves = piece.pieceMoves(currentBoard, startPosition);
+        if (isInStalemate(currentTurn)) {
+            return validMoves;
+        }
         for (ChessMove move : possibleValidMoves) {
             // some logic to figure out if the move is legal or not
+            if (checkMove(move)) {
+                validMoves.add(move);
+            }
         }
 
         return validMoves;
@@ -102,8 +109,8 @@ public class ChessGame {
         // that person is in check
 
         // get a map of position : piece for the other team
-        Map<ChessPosition, ChessPiece> pieces = getBoard().getPieces(teamColor);
-
+        Map<ChessPosition, ChessPiece> pieces = getBoard().getOtherPieces(teamColor);
+        ChessPosition kingPosition = currentBoard.getKingPosition(teamColor);
         // for each piece in the map
         // check all of the valid moves for that piece
         // if any of those moves captures the king: return true
@@ -111,7 +118,8 @@ public class ChessGame {
         for (Map.Entry<ChessPosition, ChessPiece> piece : pieces.entrySet()) {
             Collection<ChessMove> tempMoves = piece.getValue().pieceMoves(currentBoard, piece.getKey());
             for (ChessMove move : tempMoves) {
-                if (move.getEndPosition() == currentBoard.getKingPosition(teamColor)) {
+                ChessPosition endPosition = move.getEndPosition();
+                if (endPosition.equals(kingPosition)) {
                     return true;
                 }
             }
@@ -130,6 +138,15 @@ public class ChessGame {
         // try all of the different possible moves for the king and
         // if each of them still result in the king being in check
         // return true for checkmate
+        ChessPosition kingPosition = currentBoard.getKingPosition(teamColor);
+        ChessPiece king = new ChessPiece(teamColor, ChessPiece.PieceType.KING);
+        Collection<ChessMove> kingMoves = king.pieceMoves(currentBoard, kingPosition);
+        for (ChessMove move : kingMoves) {
+            if (checkMove(move)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -143,6 +160,17 @@ public class ChessGame {
         // check each piece
         // if each one returns null possible moves
         // that person is in stalemate
+
+        // get a map of positions for your own team
+        // counterintuitive to give the other team's color
+        Map<ChessPosition, ChessPiece> pieces = getBoard().getMyPieces(teamColor);
+        for (Map.Entry<ChessPosition, ChessPiece> piece : pieces.entrySet()) {
+            Collection<ChessMove> tempMoves = piece.getValue().pieceMoves(currentBoard, piece.getKey());
+            if (tempMoves != null) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -161,6 +189,33 @@ public class ChessGame {
      */
     public ChessBoard getBoard() {
         return currentBoard;
+    }
+
+    /**
+     * Checks if a move is valid
+     *
+     * @param move the move
+     * @return whether the move is valid
+     */
+    public boolean checkMove(ChessMove move) {
+        ChessPosition start = move.getStartPosition();
+        ChessPosition end = move.getEndPosition();
+        ChessPiece movePiece = currentBoard.getPiece(start);
+        ChessPiece capturePiece = currentBoard.getPiece(end);
+        boolean retVal;
+
+        currentBoard.addPiece(start, null);
+        currentBoard.addPiece(end, movePiece);
+
+        if (isInCheck(getTeamTurn())) {
+            retVal = false;
+        }
+        else {
+            retVal = true;
+        }
+        currentBoard.addPiece(start, movePiece);
+        currentBoard.addPiece(end, capturePiece);
+        return retVal;
     }
 
     @Override
