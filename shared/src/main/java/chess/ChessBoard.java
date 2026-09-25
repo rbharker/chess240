@@ -11,6 +11,8 @@ import java.util.*;
 public class ChessBoard {
 
     private final ChessPiece[][] board = new ChessPiece[8][8];
+    private final int BoardLength = 8;
+    private final int BoardWidth = 8;
 
     public ChessBoard() {
         
@@ -43,12 +45,12 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        for (int i = 0; i<8; i++) {
-            for (int j = 0; j<8; j++) {
+        for (int i = 0; i<BoardLength; i++) {
+            for (int j = 0; j<BoardWidth; j++) {
                 board[i][j] = null;
             }
         }
-        for (int i = 0; i<8; i++) {
+        for (int i = 0; i<BoardLength; i++) {
             board[1][i] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
             board[6][i] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
         }
@@ -74,13 +76,22 @@ public class ChessBoard {
         board[7][3] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
     }
 
-    // returns the pieces of the opposing team
+    /**
+     * Gets all of the opposing team's pieces
+     *
+     * @param color The position to get the piece from
+     * @return A map of positions and pieces
+     */
     public Map<ChessPosition, ChessPiece> getOtherPieces(ChessGame.TeamColor color) {
         Map<ChessPosition, ChessPiece> pieces = new HashMap<>();
-        for (int i = 0; i<8; i++) {
-            for (int j=0; j<8; j++) {
+
+        // for each position on the board
+        for (int i = 0; i<BoardLength; i++) {
+            for (int j=0; j<BoardWidth; j++) {
+                // if a piece exists on the opposing team
                 if (board[i][j] != null && board[i][j].getTeamColor() != color) {
                     ChessPosition position = new ChessPosition(i+1, j+1);
+                    // add that piece to the map
                     pieces.put(position, board[i][j]);
                 }
             }
@@ -89,13 +100,22 @@ public class ChessBoard {
         return pieces;
     }
 
-    // returns the pieces of your team
+    /**
+     * Gets all of the current team's pieces
+     *
+     * @param color The position to get the piece from
+     * @return A map of positions and pieces
+     */
     public Map<ChessPosition, ChessPiece> getMyPieces(ChessGame.TeamColor color) {
         Map<ChessPosition, ChessPiece> pieces = new HashMap<>();
-        for (int i = 0; i<8; i++) {
-            for (int j=0; j<8; j++) {
+
+        // for each space on the board
+        for (int i = 0; i<BoardLength; i++) {
+            for (int j=0; j<BoardWidth; j++) {
+                // if a piece exists on your team
                 if (board[i][j] != null && board[i][j].getTeamColor() == color) {
                     ChessPosition position = new ChessPosition(i+1, j+1);
+                    // add that piece to the map
                     pieces.put(position, board[i][j]);
                 }
             }
@@ -104,12 +124,22 @@ public class ChessBoard {
         return pieces;
     }
 
+    /**
+     * Gets the position of the king
+     *
+     * @param color The position to get the piece from
+     * @return A map of positions and pieces
+     */
     public ChessPosition getKingPosition(ChessGame.TeamColor color) {
         ChessPosition kingPosition = null;
-        for (int i = 0; i<8; i++) {
-            for (int j=0; j<8; j++) {
+
+        // check each space on the board
+        for (int i = 0; i<BoardLength; i++) {
+            for (int j=0; j<BoardWidth; j++) {
+                // if you find that team's king
                 if (board[i][j] != null && board[i][j].getTeamColor() == color) {
                     if (board[i][j].getPieceType() == ChessPiece.PieceType.KING) {
+                        // give the king's position
                         kingPosition = new ChessPosition(i+1, j+1);
                     }
                 }

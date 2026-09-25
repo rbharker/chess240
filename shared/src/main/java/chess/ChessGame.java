@@ -136,6 +136,7 @@ public class ChessGame {
                 ChessPiece promotion = new ChessPiece(getTeamTurn(), move.getPromotionPiece());
                 currentBoard.addPiece(end, promotion);
             }
+            // set the current team's color to the next color
             if (currentTurn == TeamColor.BLACK) {
                 currentTurn = TeamColor.WHITE;
             }
@@ -143,6 +144,7 @@ public class ChessGame {
                 currentTurn = TeamColor.BLACK;
             }
         }
+        // otherwise throw an error
         else {
             throw new InvalidMoveException("Invalid move!");
         }
@@ -200,6 +202,9 @@ public class ChessGame {
                 return false;
             }
         }
+
+        // if another piece can move and get the player out of check
+        // return false for checkmate
         Map<ChessPosition, ChessPiece> pieces = getBoard().getMyPieces(teamColor);
         for (Map.Entry<ChessPosition, ChessPiece> piece : pieces.entrySet()) {
             Collection<ChessMove> tempMoves = piece.getValue().pieceMoves(currentBoard, piece.getKey());
@@ -221,13 +226,10 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        // check each piece
-        // if each one returns null possible moves
-        // that person is in stalemate
-
         boolean retVal = true;
-        // get a map of positions for your own team
-        // counterintuitive to give the other team's color
+        // get a map of pieces for your own team
+        // for each piece of yours on the board
+        // if that piece has possible moves, you are not in stalemate
         Map<ChessPosition, ChessPiece> pieces = getBoard().getMyPieces(teamColor);
         for (Map.Entry<ChessPosition, ChessPiece> piece : pieces.entrySet()) {
             Collection<ChessMove> tempMoves = validMoves(piece.getKey());
@@ -235,6 +237,9 @@ public class ChessGame {
                 retVal =  false;
             }
         }
+        // otherwise if you are in checkmate and if it is not your turn
+        // or if you are in check
+        // you are not in stalemate
         if ((isInCheckmate(teamColor) && (currentTurn != teamColor)) || isInCheck(teamColor)) {
             retVal = false;
         }
@@ -260,27 +265,33 @@ public class ChessGame {
     }
 
     /**
-     * Checks if a move is valid
+     * Tests if a move is valid without changing the board
      *
      * @param move the move
      * @return whether the move is valid
      */
     public boolean checkMove(ChessMove move, ChessGame.TeamColor color) {
+        // get positions and pieces
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
         ChessPiece movePiece = currentBoard.getPiece(start);
         ChessPiece capturePiece = currentBoard.getPiece(end);
         boolean retVal;
 
+        // set the board as if you're moving the piece there
         currentBoard.addPiece(start, null);
         currentBoard.addPiece(end, movePiece);
 
+        // now check if that person is in check
+        // if so the move is not valid
         if (isInCheck(color)) {
             retVal = false;
         }
         else {
             retVal = true;
         }
+
+        // set the board back to how it was before
         currentBoard.addPiece(start, movePiece);
         currentBoard.addPiece(end, capturePiece);
         return retVal;
