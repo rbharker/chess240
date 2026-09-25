@@ -56,15 +56,16 @@ public class ChessGame {
         Collection<ChessMove> validMoves = new ArrayList<>();
 
         ChessPiece piece = currentBoard.getPiece(startPosition);
+
+        // if there isn't a piece there return null
         if (piece == null) {
             return null;
         }
+
+        // get the possible valid moves from phase 0
         Collection<ChessMove> possibleValidMoves = piece.pieceMoves(currentBoard, startPosition);
-//        if (isInStalemate(piece.getTeamColor())) {
-//            return validMoves;
-//        }
+        // for each move use checkMove to determine if it's actually legal
         for (ChessMove move : possibleValidMoves) {
-            // some logic to figure out if the move is legal or not
             if (checkMove(move, piece.getTeamColor())) {
                 validMoves.add(move);
             }
@@ -83,34 +84,54 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
         boolean inValidMoves = false;
+
+        // if there are no valid moves throw exception
         if (validMoves == null) {throw new InvalidMoveException("Invalid move!");}
+
+        // check if the move the player wants to make
+        // is in the list of valid moves
         for (ChessMove tempMove : validMoves) {
             if (tempMove.equals(move)) {
                 inValidMoves = true;
             }
         }
+
+        // declare variables and get positions
         ChessPiece movePiece;
         ChessPiece capturePiece;
         ChessGame.TeamColor pieceColor;
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
+
+        // if there is a piece at that space
+        // get the values
         if (currentBoard.getPiece(start) != null) {
             movePiece = currentBoard.getPiece(start);
             capturePiece = currentBoard.getPiece(end);
             pieceColor = currentBoard.getPiece(move.getStartPosition()).getTeamColor();
         }
+        // otherwise throw error
         else {
             throw new InvalidMoveException("Invalid move!");
         }
+
+        // if the proposed move is a valid move
+        // and if the color is allowed to move right now (it's their turn)
+        // and there is a piece to move
         if (inValidMoves && (pieceColor == currentTurn) && (movePiece != null)) {
+            // make the move
             currentBoard.addPiece(start, null);
             currentBoard.addPiece(end, movePiece);
 
+            // now check if that move puts the player in check
+            // if so, reverse the move and throw an error
             if (isInCheck(getTeamTurn())) {
                 currentBoard.addPiece(start, movePiece);
                 currentBoard.addPiece(end, capturePiece);
                 throw new InvalidMoveException("Invalid move!");
             }
+            // if the move requires a promotion
+            // replace the piece with the promotion piece
             if (move.getPromotionPiece() != null) {
                 ChessPiece promotion = new ChessPiece(getTeamTurn(), move.getPromotionPiece());
                 currentBoard.addPiece(end, promotion);
