@@ -179,6 +179,15 @@ public class ChessGame {
                 return false;
             }
         }
+        Map<ChessPosition, ChessPiece> pieces = getBoard().getMyPieces(teamColor);
+        for (Map.Entry<ChessPosition, ChessPiece> piece : pieces.entrySet()) {
+            Collection<ChessMove> tempMoves = piece.getValue().pieceMoves(currentBoard, piece.getKey());
+            for (ChessMove move : tempMoves) {
+                if (checkMove(move, teamColor)) {
+                    return false;
+                }
+            }
+        }
 
         return true;
     }
