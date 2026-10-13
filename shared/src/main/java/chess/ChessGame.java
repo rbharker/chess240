@@ -119,17 +119,13 @@ public class ChessGame {
         // and if the color is allowed to move right now (it's their turn)
         // and there is a piece to move
         if (inValidMoves && (pieceColor == currentTurn) && (movePiece != null)) {
+            // check that the move is valid
+            if (!checkMove(move, currentTurn)) {
+                throw new InvalidMoveException("Invalid move!");
+            }
             // make the move
             currentBoard.addPiece(start, null);
             currentBoard.addPiece(end, movePiece);
-
-            // now check if that move puts the player in check
-            // if so, reverse the move and throw an error
-            if (isInCheck(getTeamTurn())) {
-                currentBoard.addPiece(start, movePiece);
-                currentBoard.addPiece(end, capturePiece);
-                throw new InvalidMoveException("Invalid move!");
-            }
             // if the move requires a promotion
             // replace the piece with the promotion piece
             if (move.getPromotionPiece() != null) {
