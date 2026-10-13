@@ -8,10 +8,10 @@ public class BishopMoveStrategy implements MoveStrategy{
     public Collection<ChessMove> validMoves(ChessGame.TeamColor color, ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> validMoves = new ArrayList<>();
 
-        validMoves.addAll(moveMultiple(color, 1, 1, myPosition, board));
-        validMoves.addAll(moveMultiple(color, -1, 1, myPosition, board));
-        validMoves.addAll(moveMultiple(color, 1, -1, myPosition, board));
-        validMoves.addAll(moveMultiple(color, -1, -1, myPosition, board));
+        validMoves.addAll(MoveStrategy.moveMultiple(color, 1, 1, myPosition, board));
+        validMoves.addAll(MoveStrategy.moveMultiple(color, -1, 1, myPosition, board));
+        validMoves.addAll(MoveStrategy.moveMultiple(color, 1, -1, myPosition, board));
+        validMoves.addAll(MoveStrategy.moveMultiple(color, -1, -1, myPosition, board));
 
         return validMoves;
     }

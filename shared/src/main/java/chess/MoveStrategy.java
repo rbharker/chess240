@@ -10,7 +10,7 @@ public interface MoveStrategy {
 
     Collection<ChessMove> validMoves(ChessGame.TeamColor color, ChessBoard board, ChessPosition myPosition);
 
-    default ChessMove moveOne(ChessGame.TeamColor color, int x, int y, ChessPosition myPosition, ChessBoard board) {
+    static ChessMove moveOne(ChessGame.TeamColor color, int x, int y, ChessPosition myPosition, ChessBoard board) {
         int tempRow = myPosition.getRow() + y;
         int tempCol = myPosition.getColumn() + x;
 
@@ -43,7 +43,7 @@ public interface MoveStrategy {
         }
     }
 
-    default Collection<ChessMove> moveMultiple(ChessGame.TeamColor color, int x, int y, ChessPosition myPosition, ChessBoard board) {
+    static Collection<ChessMove> moveMultiple(ChessGame.TeamColor color, int x, int y, ChessPosition myPosition, ChessBoard board) {
         int tempRow = myPosition.getRow() + y;
         int tempCol = myPosition.getColumn() + x;
         Collection<ChessMove> validMoves = new ArrayList<>();
