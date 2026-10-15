@@ -1,6 +1,6 @@
 package server;
 
-// import chess.*;
+ import chess.*;
 
 //public class ServerMain {
 //    public static void main(String[] args) {
