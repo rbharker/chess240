@@ -3,18 +3,19 @@ package dataaccess;
 import model.UserData;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
 public class MemoryUserDAO implements UserDAO {
     HashMap<String, List<String >> dataCollection = new HashMap<>();
 
+    // clears the user database
     @Override
     public void clearUsers() {
         dataCollection.clear();
     }
 
+    // creates a new user and adds their data to the database
     @Override
     public void createUser(UserData userData) throws DataAccessException {
         if (dataCollection.containsKey(userData.username())) {
@@ -26,6 +27,7 @@ public class MemoryUserDAO implements UserDAO {
         }
     }
 
+    // returns the data associated with a specific username
     @Override
     public UserData getUser(String username) throws DataAccessException {
         if (!dataCollection.containsKey(username)) {
