@@ -3,16 +3,23 @@ package dataaccess;
 import model.*;
 
 import java.util.Collection;
+import java.util.Random;
 
 public interface GameDAO {
 
     // adds a new game and its data to the database
-    public String createGame(String authToken, String gameName, String gameID);
+    String createGame(String authToken, String gameName);
 
     // returns a list of all active games
-    public Collection<String> getGamesList() throws DataAccessException;
+    Collection<Collection<String>> getGamesList() throws DataAccessException;
 
     // adds a user to the specified team and game if possible
-    public String joinGame(String authToken, String gameID, String playerColor) throws DataAccessException;
+    String joinGame(String authToken, String gameID, String playerColor) throws DataAccessException;
+
+    static String createGameID() {
+        Random r = new Random();
+        int randNum = r.nextInt(1000);
+        return Integer.toString(randNum);
+    }
 
 }
