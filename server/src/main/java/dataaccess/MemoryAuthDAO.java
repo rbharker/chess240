@@ -52,7 +52,7 @@ public class MemoryAuthDAO implements  AuthDAO {
     public String checkAuthToken(String authToken) {
         String token = dataCollection.get(authToken);
         if (token != null) {
-            return authToken;
+            return token;
         }
         else {
             return null;
