@@ -9,21 +9,25 @@ import java.util.Random;
 public interface GameDAO {
 
     // adds a new game and its data to the database
-    String createGame(String authToken, String gameName);
+    String createGame(String gameName);
 
     // returns a list of all active games
-    Collection<Collection<String>> getGamesList() throws DataAccessException;
+    List<List<String>> getGamesList() throws DataAccessException;
 
     // adds a user to the specified team and game if possible
-    String joinGame(String username, String gameID, String playerColor) throws DataAccessException;
+    void joinGame(String username, String gameID, String playerColor) throws DataAccessException;
 
     // returns the corresponding game data if it exists
     List<String> getGameData(String gameID) throws DataAccessException;
 
+    // creates a random gameID
     static String createGameID() {
         Random r = new Random();
         int randNum = r.nextInt(1000);
         return Integer.toString(randNum);
     }
+
+    // clears the database of all games
+    void clearGames();
 
 }

@@ -1,7 +1,4 @@
 package dataaccess;
-
-import org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine;
-
 import java.util.*;
 
 public class MemoryGameDAO implements GameDAO {
@@ -20,10 +17,10 @@ public class MemoryGameDAO implements GameDAO {
 
     // returns a list of all active games
     @Override
-    public Collection<Collection<String>> getGamesList() throws DataAccessException {
-        Collection<Collection<String>> gameList = new ArrayList<>();
+    public List<List<String>> getGamesList() throws DataAccessException {
+        List<List<String>> gameList = new ArrayList<>();
         for (Map.Entry<String, List<String>> entry : dataCollection.entrySet()) {
-            Collection<String> data = new ArrayList<>();
+            List<String> data = new ArrayList<>();
             data.addAll(entry.getValue());
             gameList.add(data);
         }
@@ -45,7 +42,7 @@ public class MemoryGameDAO implements GameDAO {
 
     // adds a user to the specified team and game if possible
     @Override
-    public String joinGame(String username, String gameID, String playerColor) throws DataAccessException {
+    public void joinGame(String username, String gameID, String playerColor) throws DataAccessException {
         if (!dataCollection.containsKey(gameID)) {
             throw new DataAccessException("Game does not exist!");
         }
@@ -53,15 +50,19 @@ public class MemoryGameDAO implements GameDAO {
             var data = getGameData(gameID);
             if ((playerColor == "white") && (data.get(1) == null)) {
                 dataCollection.get(gameID).add(1, username);
-                return gameID;
             }
             else if ((playerColor == "black") && (data.get(2) == null)) {
                 dataCollection.get(gameID).add(2, username);
-                return gameID;
             }
             else {
                 throw new DataAccessException("Invalid request");
             }
         }
+    }
+
+    // clears the database of all games
+    @Override
+    public void clearGames() {
+        dataCollection.clear();
     }
 }
