@@ -18,7 +18,7 @@ public class GameService {
         this.gameDAO = gameDAO;
     }
 
-    ListGamesResult listGames(ListGamesRequest listGamesRequest) throws DataAccessException {
+    public ListGamesResult listGames(ListGamesRequest listGamesRequest) throws DataAccessException {
         String username = authDAO.checkAuthToken(listGamesRequest.authToken());
         if (username == null) {
             throw new DataAccessException("Invalid request.");
@@ -28,7 +28,7 @@ public class GameService {
         return result;
     }
 
-    CreateGameResult createGame(CreateGameRequest createGameRequest) throws DataAccessException {
+    public CreateGameResult createGame(CreateGameRequest createGameRequest) throws DataAccessException {
         String username = authDAO.checkAuthToken(createGameRequest.authToken());
         if (username == null) {
             throw new DataAccessException("Invalid request.");
@@ -38,7 +38,7 @@ public class GameService {
         return result;
     }
 
-    void joinGame(JoinGameRequest joinGameRequest) throws DataAccessException {
+    public void joinGame(JoinGameRequest joinGameRequest) throws DataAccessException {
         String username = authDAO.checkAuthToken(joinGameRequest.authToken());
         if (username == null) {
             throw new DataAccessException("Invalid request.");
