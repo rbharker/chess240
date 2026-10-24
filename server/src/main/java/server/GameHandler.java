@@ -22,7 +22,7 @@ public class GameHandler {
         var serializer = new Gson();
 
         // convert the json request to my request type
-        ListGamesRequest request = ctx.bodyAsClass(ListGamesRequest.class);
+        ListGamesRequest request = new ListGamesRequest(ctx.header("authorization"));
 
         // register the user and return the result as a json object
         try {
@@ -43,8 +43,10 @@ public class GameHandler {
     public void createGameHandler(Context ctx) {
         var serializer = new Gson();
 
-        // convert the json request to my request type
-        CreateGameRequest request = ctx.bodyAsClass(CreateGameRequest.class);
+        // convert the json request to create game request type
+        CreateGameRequest body = ctx.bodyAsClass(CreateGameRequest.class);
+        String authToken = ctx.header("authorization");
+        CreateGameRequest request = new CreateGameRequest(authToken, body.gameName());
 
         // register the user and return the result as a json object
         try {
@@ -55,18 +57,20 @@ public class GameHandler {
 
             // catch an exception and return the error as a json object with the error code
         } catch (DataAccessException e) {
-            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()),
+            var excp = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()),
                     "success", false));
             ctx.status(403);
-            ctx.json(body);
+            ctx.json(excp);
         }
     }
 
     public void joinGameHandler(Context ctx) {
         var serializer = new Gson();
 
-        // convert the json request to my request type
-        JoinGameRequest request = ctx.bodyAsClass(JoinGameRequest.class);
+        // convert the json request to join game request type
+        JoinGameRequest body = ctx.bodyAsClass(JoinGameRequest.class);
+        String authToken = ctx.header("authorization");
+        JoinGameRequest request = new JoinGameRequest(authToken, body.gameID(), body.playerColor());
 
         // register the user and return the result as a json object
         try {
@@ -77,10 +81,10 @@ public class GameHandler {
 
             // catch an exception and return the error as a json object with the error code
         } catch (DataAccessException e) {
-            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()),
+            var excp = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()),
                     "success", false));
             ctx.status(403);
-            ctx.json(body);
+            ctx.json(excp);
         }
     }
 }
