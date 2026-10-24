@@ -19,7 +19,7 @@ public class UserHandler {
         this.userService = userService;
     }
 
-    public void handleRegister(Context ctx) {
+    public void registerHandler(Context ctx) {
         var serializer = new Gson();
 
         // convert the json request to my request type
@@ -41,7 +41,7 @@ public class UserHandler {
         }
     }
 
-    public void handleLogin(Context ctx) {
+    public void loginHandler(Context ctx) {
         var serializer = new Gson();
 
         // convert the json request to my request type
@@ -63,7 +63,7 @@ public class UserHandler {
         }
     }
 
-    public void handleLogout(Context ctx) {
+    public void logoutHandler(Context ctx) {
         var serializer = new Gson();
         var authToken = ctx.header("authorization");
         LogoutRequest request = new LogoutRequest(authToken);
