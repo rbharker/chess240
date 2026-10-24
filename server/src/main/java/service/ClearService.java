@@ -15,15 +15,9 @@ public class ClearService {
         this.userDAO = userDAO;
     }
 
-    void clearUserData() {
+    void clearApplication() {
         userDAO.clearUsers();
-    }
-
-    void clearGameData() {
         gameDAO.clearGames();
-    }
-
-    void clearAuthData() {
         authDAO.clearAuth();
     }
 }

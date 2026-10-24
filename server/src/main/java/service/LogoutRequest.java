@@ -1,3 +1,3 @@
 package service;
 
-record LogoutRequest(String authData) {}
+public record LogoutRequest(String authData) {}
