@@ -19,7 +19,7 @@ public class MemoryUserDAO implements UserDAO {
     @Override
     public void createUser(UserData userData) throws DataAccessException {
         if (dataCollection.containsKey(userData.username())) {
-            throw new DataAccessException("Username taken.");
+            throw new DataAccessException("already taken");
         }
         else {
             List<String> data = Arrays.asList(userData.password(), userData.email());
@@ -31,7 +31,7 @@ public class MemoryUserDAO implements UserDAO {
     @Override
     public UserData getUser(String username) throws DataAccessException {
         if (!dataCollection.containsKey(username)) {
-            throw new DataAccessException("User not found.");
+            throw new DataAccessException("bad request");
         }
         else {
             UserData data = new UserData(username,

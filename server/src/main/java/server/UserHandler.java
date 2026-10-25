@@ -77,7 +77,12 @@ public class UserHandler {
         } catch (DataAccessException e) {
             var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()),
                     "success", false));
-            ctx.status(401);
+            if (e.getMessage().equals("bad request")) {
+                ctx.status(400);
+            }
+            else if (e.getMessage().equals("unauthorized")) {
+                ctx.status(401);
+            }
             ctx.json(body);
         }
     }

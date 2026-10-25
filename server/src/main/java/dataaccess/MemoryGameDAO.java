@@ -9,7 +9,7 @@ public class MemoryGameDAO implements GameDAO {
     public String createGame(String gameName) {
         // white player first
         // black player second
-        List<String> data = new ArrayList<>(Arrays.asList(gameName, null, null));
+        List<String> data = new ArrayList<>(Arrays.asList(null, null, gameName));
         String gameID = GameDAO.createGameID();
         dataCollection.put(gameID, data);
         return gameID;
@@ -17,7 +17,7 @@ public class MemoryGameDAO implements GameDAO {
 
     // returns a list of all active games
     @Override
-    public List<List<String>> getGamesList() throws DataAccessException {
+    public List<List<String>> getGamesList() {
         List<List<String>> gameList = new ArrayList<>();
         for (Map.Entry<String, List<String>> entry : dataCollection.entrySet()) {
             List<String> data = new ArrayList<>();
@@ -30,7 +30,7 @@ public class MemoryGameDAO implements GameDAO {
     @Override
     public List<String> getGameData(String gameID) throws DataAccessException {
         if (!dataCollection.containsKey(gameID)) {
-            throw new DataAccessException("Game does not exist!");
+            throw new DataAccessException("game does not exist");
         }
         else {
             List<String> data = new ArrayList<>();
@@ -44,18 +44,18 @@ public class MemoryGameDAO implements GameDAO {
     @Override
     public void joinGame(String username, String gameID, String playerColor) throws DataAccessException {
         if (!dataCollection.containsKey(gameID)) {
-            throw new DataAccessException("Game does not exist!");
+            throw new DataAccessException("bad request");
         }
         else {
             var data = dataCollection.get(gameID);
-            if ((playerColor.equals("WHITE")) && (data.get(1) == null)) {
+            if ((playerColor.equals("WHITE")) && (data.get(0) == null)) {
                 dataCollection.get(gameID).set(1, username);
             }
-            else if ((playerColor.equals("BLACK")) && (data.get(2) == null)) {
+            else if ((playerColor.equals("BLACK")) && (data.get(1) == null)) {
                 dataCollection.get(gameID).set(2, username);
             }
             else {
-                throw new DataAccessException("Colors taken!");
+                throw new DataAccessException("already taken");
             }
         }
     }

@@ -34,7 +34,7 @@ public class MemoryAuthDAO implements  AuthDAO {
             return dataCollection.get(authToken);
         }
         else {
-            throw new DataAccessException("Auth token not found.");
+            throw new DataAccessException("bad request");
         }
     }
 

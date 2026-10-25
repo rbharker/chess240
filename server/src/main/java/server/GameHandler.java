@@ -52,7 +52,7 @@ public class GameHandler {
         } catch (DataAccessException e) {
             var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()),
                     "success", false));
-            ctx.status(403);
+            ctx.status(401);
             ctx.json(body);
         }
     }
@@ -79,7 +79,7 @@ public class GameHandler {
         } catch (DataAccessException e) {
             var excp = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()),
                     "success", false));
-            ctx.status(403);
+            ctx.status(401);
             ctx.json(excp);
         }
     }
@@ -106,7 +106,15 @@ public class GameHandler {
         } catch (DataAccessException e) {
             var excp = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()),
                     "success", false));
-            ctx.status(403);
+            if (e.getMessage().equals("bad request")) {
+                ctx.status(400);
+            }
+            else if (e.getMessage().equals("unauthorized")) {
+                ctx.status(401);
+            }
+            else if (e.getMessage().equals("already taken")) {
+                ctx.status(403);
+            }
             ctx.json(excp);
         }
     }
