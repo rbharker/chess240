@@ -2,12 +2,15 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
-import service.*;
-import java.io.*;
-import java.net.*;
+import request.CreateGameRequest;
+import request.JoinGameRequest;
+import request.ListGamesRequest;
+import result.CreateGameResult;
+import result.JoinGameResult;
+import result.ListGamesResult;
+
 import java.util.Map;
 
-import com.sun.net.httpserver.*;
 import io.javalin.http.Context;
 import service.GameService;
 
@@ -16,19 +19,10 @@ import service.GameService;
 */
 public class GameHandler {
     private final GameService gameService;
+    private final BodyObject bodyObject = new BodyObject();
 
     public GameHandler(GameService gameService) {
         this.gameService = gameService;
-    }
-
-    private static <T> T getGameBodyObject(Context context, Class<T> clazz) {
-        var bodyObject = new Gson().fromJson(context.body(), clazz);
-
-        if (bodyObject == null) {
-            throw new RuntimeException("missing required body");
-        }
-
-        return bodyObject;
     }
 
     /*
@@ -50,10 +44,10 @@ public class GameHandler {
 
             // catch an exception and return the error as a json object with the error code
         } catch (DataAccessException e) {
-            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()),
+            var listGamesBody = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()),
                     "success", false));
             ctx.status(401);
-            ctx.json(body);
+            ctx.json(listGamesBody);
         }
     }
 
@@ -64,7 +58,7 @@ public class GameHandler {
         var serializer = new Gson();
 
         // convert the json request to create game request type
-        CreateGameRequest body = getGameBodyObject(ctx, CreateGameRequest.class);
+        CreateGameRequest body = bodyObject.getBodyObject(ctx, CreateGameRequest.class);
         String authToken = ctx.header("authorization");
         CreateGameRequest request = new CreateGameRequest(authToken, body.gameName());
 
@@ -96,7 +90,7 @@ public class GameHandler {
         var serializer = new Gson();
 
         // convert the json request to join game request type
-        JoinGameRequest body = getGameBodyObject(ctx, JoinGameRequest.class);
+        JoinGameRequest body = bodyObject.getBodyObject(ctx, JoinGameRequest.class);
         String authToken = ctx.header("authorization");
         JoinGameRequest request = new JoinGameRequest(authToken, body.gameID(), body.playerColor());
 

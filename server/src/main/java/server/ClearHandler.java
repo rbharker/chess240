@@ -1,13 +1,8 @@
 package server;
 
 import com.google.gson.Gson;
-import dataaccess.DataAccessException;
-import service.*;
-import java.io.*;
-import java.net.*;
-import java.util.Map;
+import result.ClearApplicationResult;
 
-import com.sun.net.httpserver.*;
 import io.javalin.http.Context;
 import service.ClearService;
 

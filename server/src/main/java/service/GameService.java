@@ -3,10 +3,14 @@ package service;
 import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
-import dataaccess.MemoryUserDAO;
 import model.GameData;
+import request.CreateGameRequest;
+import request.JoinGameRequest;
+import request.ListGamesRequest;
+import result.CreateGameResult;
+import result.JoinGameResult;
+import result.ListGamesResult;
 
-import java.util.Collection;
 import java.util.List;
 
 public class GameService {

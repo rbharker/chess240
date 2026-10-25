@@ -2,13 +2,11 @@ package service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.eclipse.jetty.util.log.Log;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import server.*;
-import service.*;
+import request.*;
 import dataaccess.*;
 import model.*;
+import result.*;
 
 class ServiceTest {
     MemoryAuthDAO authDatabase = new MemoryAuthDAO();

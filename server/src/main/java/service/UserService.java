@@ -2,6 +2,12 @@ package service;
 
 import dataaccess.*;
 import model.*;
+import request.LoginRequest;
+import request.LogoutRequest;
+import request.RegisterRequest;
+import result.LoginResult;
+import result.LogoutResult;
+import result.RegisterResult;
 
 public class UserService {
 

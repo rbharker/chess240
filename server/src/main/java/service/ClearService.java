@@ -3,6 +3,7 @@ package service;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
 import dataaccess.MemoryUserDAO;
+import result.ClearApplicationResult;
 
 public class ClearService {
     private MemoryAuthDAO authDAO;

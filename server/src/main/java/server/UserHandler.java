@@ -2,12 +2,15 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
-import service.*;
-import java.io.*;
-import java.net.*;
+import request.LoginRequest;
+import request.LogoutRequest;
+import request.RegisterRequest;
+import result.LoginResult;
+import result.LogoutResult;
+import result.RegisterResult;
+
 import java.util.Map;
 
-import com.sun.net.httpserver.*;
 import io.javalin.http.Context;
 import service.UserService;
 
@@ -17,19 +20,10 @@ import service.UserService;
 public class UserHandler {
 
     private final UserService userService;
+    private final BodyObject bodyObject = new BodyObject();
 
     public UserHandler(UserService userService) {
         this.userService = userService;
-    }
-
-    private static <T> T getUserBodyObject(Context context, Class<T> clazz) {
-        var bodyObject = new Gson().fromJson(context.body(), clazz);
-
-        if (bodyObject == null) {
-            throw new RuntimeException("missing required body");
-        }
-
-        return bodyObject;
     }
 
     /*
@@ -39,7 +33,7 @@ public class UserHandler {
         var serializer = new Gson();
 
         // convert the json request to my request type
-        RegisterRequest request = getUserBodyObject(ctx, RegisterRequest.class);
+        RegisterRequest request = bodyObject.getBodyObject(ctx, RegisterRequest.class);
 
         // register the user and return the result as a json object
         try {
@@ -69,7 +63,7 @@ public class UserHandler {
         var serializer = new Gson();
 
         // convert the json request to my request type
-        LoginRequest request = getUserBodyObject(ctx, LoginRequest.class);
+        LoginRequest request = bodyObject.getBodyObject(ctx, LoginRequest.class);
 
         // login the user and return the result as a json object
         try {
@@ -106,10 +100,10 @@ public class UserHandler {
             ctx.status(200);
 
         } catch (DataAccessException e) {
-            var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()),
+            var logoutBody = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()),
                     "success", false));
             ctx.status(401);
-            ctx.json(body);
+            ctx.json(logoutBody);
         }
     }
 }
