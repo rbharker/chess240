@@ -11,6 +11,9 @@ import com.sun.net.httpserver.*;
 import io.javalin.http.Context;
 import service.GameService;
 
+/*
+    Class that contains handlers for each game endpoint
+*/
 public class GameHandler {
     private GameService gameService;
 
@@ -18,6 +21,9 @@ public class GameHandler {
         this.gameService = gameService;
     }
 
+    /*
+        Method used to handle the list games endpoint
+    */
     public void listGamesHandler(Context ctx) {
         var serializer = new Gson();
 
@@ -41,6 +47,9 @@ public class GameHandler {
         }
     }
 
+    /*
+        Method used to handle the create games endpoint
+    */
     public void createGameHandler(Context ctx) {
         var serializer = new Gson();
 
@@ -65,6 +74,9 @@ public class GameHandler {
         }
     }
 
+    /*
+        Method used to handle the join game endpoint
+    */
     public void joinGameHandler(Context ctx) {
         var serializer = new Gson();
 

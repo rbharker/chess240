@@ -11,6 +11,9 @@ import com.sun.net.httpserver.*;
 import io.javalin.http.Context;
 import service.ClearService;
 
+/*
+    Class that contains handler for the clear database endpoint
+*/
 public class ClearHandler {
     private ClearService clearService;
 

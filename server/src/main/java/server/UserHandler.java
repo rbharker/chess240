@@ -11,6 +11,9 @@ import com.sun.net.httpserver.*;
 import io.javalin.http.Context;
 import service.UserService;
 
+/*
+    Class that contains handlers for each user endpoint
+*/
 public class UserHandler {
 
     private UserService userService;
@@ -19,6 +22,9 @@ public class UserHandler {
         this.userService = userService;
     }
 
+    /*
+        Method used to handle the register user endpoint
+    */
     public void registerHandler(Context ctx) {
         var serializer = new Gson();
 
@@ -41,6 +47,9 @@ public class UserHandler {
         }
     }
 
+    /*
+        Method used to handle the login user endpoint
+    */
     public void loginHandler(Context ctx) {
         var serializer = new Gson();
 
@@ -63,6 +72,9 @@ public class UserHandler {
         }
     }
 
+    /*
+        Method used to handle the logout user endpoint
+    */
     public void logoutHandler(Context ctx) {
         var serializer = new Gson();
         var authToken = ctx.header("authorization");
