@@ -43,7 +43,7 @@ public class GameService {
         return result;
     }
 
-    public void joinGame(JoinGameRequest joinGameRequest) throws DataAccessException {
+    public JoinGameResult joinGame(JoinGameRequest joinGameRequest) throws DataAccessException {
         String authToken = authDAO.checkAuthToken(joinGameRequest.authToken());
         if (authToken == null) {
             throw new DataAccessException("unauthorized");
@@ -51,6 +51,7 @@ public class GameService {
         try {
             String username = authDAO.getUserByAuth(authToken);
             gameDAO.joinGame(username, joinGameRequest.gameID(), joinGameRequest.playerColor());
+            return new JoinGameResult(null);
         }
         catch (DataAccessException e) {
             throw e;

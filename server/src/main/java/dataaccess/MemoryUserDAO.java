@@ -40,4 +40,8 @@ public class MemoryUserDAO implements UserDAO {
             return data;
         }
     }
+
+    public HashMap<String, List<String>> getDataCollection() {
+        return dataCollection;
+    }
 }

@@ -24,8 +24,8 @@ public class ClearHandler {
     public void clearApplicationHandler(Context ctx) {
         var serializer = new Gson();
         var authToken = ctx.header("authorization");
-        clearService.clearApplication();
-        var jsonResult = serializer.toJson(null);
+        ClearApplicationResult clearApplicationResult = clearService.clearApplication();
+        var jsonResult = serializer.toJson(clearApplicationResult);
         ctx.json(jsonResult);
         ctx.status(200);
     }

@@ -102,8 +102,8 @@ public class GameHandler {
 
         // register the user and return the result as a json object
         try {
-            gameService.joinGame(request);
-            var jsonResult = serializer.toJson(null);
+            JoinGameResult joinGameResult = gameService.joinGame(request);
+            var jsonResult = serializer.toJson(joinGameResult);
             ctx.json(jsonResult);
             ctx.status(200);
 

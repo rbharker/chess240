@@ -49,10 +49,11 @@ public class UserService {
         }
     }
 
-    public void logout(LogoutRequest logoutRequest) throws DataAccessException {
+    public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException {
         String authToken = authDAO.checkAuthToken(logoutRequest.authData());
         if (authToken != null) {
             authDAO.deleteAuth(authToken);
+            return new LogoutResult(null);
         }
         else {
             throw new DataAccessException("unauthorized");

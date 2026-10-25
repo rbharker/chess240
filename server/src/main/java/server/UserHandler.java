@@ -100,8 +100,8 @@ public class UserHandler {
         var authToken = ctx.header("authorization");
         LogoutRequest request = new LogoutRequest(authToken);
         try {
-            userService.logout(request);
-            var jsonResult = serializer.toJson(null);
+            LogoutResult logoutResult = userService.logout(request);
+            var jsonResult = serializer.toJson(logoutResult);
             ctx.json(jsonResult);
             ctx.status(200);
 

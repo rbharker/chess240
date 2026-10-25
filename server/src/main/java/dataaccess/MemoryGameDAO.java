@@ -74,4 +74,8 @@ public class MemoryGameDAO implements GameDAO {
     public void clearGames() {
         dataCollection.clear();
     }
+
+    public HashMap<String, List<String>> getDataCollection() {
+        return dataCollection;
+    }
 }
