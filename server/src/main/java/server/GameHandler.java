@@ -21,6 +21,16 @@ public class GameHandler {
         this.gameService = gameService;
     }
 
+    private static <T> T getBodyObject(Context context, Class<T> clazz) {
+        var bodyObject = new Gson().fromJson(context.body(), clazz);
+
+        if (bodyObject == null) {
+            throw new RuntimeException("missing required body");
+        }
+
+        return bodyObject;
+    }
+
     /*
         Method used to handle the list games endpoint
     */
@@ -54,7 +64,7 @@ public class GameHandler {
         var serializer = new Gson();
 
         // convert the json request to create game request type
-        CreateGameRequest body = ctx.bodyAsClass(CreateGameRequest.class);
+        CreateGameRequest body = getBodyObject(ctx, CreateGameRequest.class);
         String authToken = ctx.header("authorization");
         CreateGameRequest request = new CreateGameRequest(authToken, body.gameName());
 
@@ -81,7 +91,7 @@ public class GameHandler {
         var serializer = new Gson();
 
         // convert the json request to join game request type
-        JoinGameRequest body = ctx.bodyAsClass(JoinGameRequest.class);
+        JoinGameRequest body = getBodyObject(ctx, JoinGameRequest.class);
         String authToken = ctx.header("authorization");
         JoinGameRequest request = new JoinGameRequest(authToken, body.gameID(), body.playerColor());
 

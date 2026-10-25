@@ -22,6 +22,16 @@ public class UserHandler {
         this.userService = userService;
     }
 
+    private static <T> T getBodyObject(Context context, Class<T> clazz) {
+        var bodyObject = new Gson().fromJson(context.body(), clazz);
+
+        if (bodyObject == null) {
+            throw new RuntimeException("missing required body");
+        }
+
+        return bodyObject;
+    }
+
     /*
         Method used to handle the register user endpoint
     */
@@ -29,7 +39,7 @@ public class UserHandler {
         var serializer = new Gson();
 
         // convert the json request to my request type
-        RegisterRequest request = ctx.bodyAsClass(RegisterRequest.class);
+        RegisterRequest request = getBodyObject(ctx, RegisterRequest.class);
 
         // register the user and return the result as a json object
         try {
@@ -54,7 +64,7 @@ public class UserHandler {
         var serializer = new Gson();
 
         // convert the json request to my request type
-        LoginRequest request = ctx.bodyAsClass(LoginRequest.class);
+        LoginRequest request = getBodyObject(ctx, LoginRequest.class);
 
         // login the user and return the result as a json object
         try {

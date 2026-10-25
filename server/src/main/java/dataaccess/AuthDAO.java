@@ -19,7 +19,7 @@ public interface AuthDAO {
     String createAuth(AuthData data);
 
     // returns the authData associated with a username
-    String getAuth(String username) throws DataAccessException;
+    String getUserByAuth(String authToken) throws DataAccessException;
 
     // deletes the specified authToken
     // returns null when successful

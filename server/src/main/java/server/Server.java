@@ -32,7 +32,7 @@ public class Server {
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                     .post("/user", userHandler::registerHandler)
                     .post("/session", userHandler::loginHandler)
-                    .delete("/session", userHandler::loginHandler)
+                    .delete("/session", userHandler::logoutHandler)
                     .get("/game", gameHandler::listGamesHandler)
                     .post("/game", gameHandler::createGameHandler)
                     .put("/game", gameHandler::joinGameHandler)

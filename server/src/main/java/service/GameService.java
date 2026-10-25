@@ -29,8 +29,8 @@ public class GameService {
     }
 
     public CreateGameResult createGame(CreateGameRequest createGameRequest) throws DataAccessException {
-        String username = authDAO.checkAuthToken(createGameRequest.authToken());
-        if (username == null) {
+        String authToken = authDAO.checkAuthToken(createGameRequest.authToken());
+        if (authToken == null) {
             throw new DataAccessException("Invalid request.");
         }
         String gameID = gameDAO.createGame(createGameRequest.gameName());
@@ -39,15 +39,16 @@ public class GameService {
     }
 
     public void joinGame(JoinGameRequest joinGameRequest) throws DataAccessException {
-        String username = authDAO.checkAuthToken(joinGameRequest.authToken());
-        if (username == null) {
+        String authToken = authDAO.checkAuthToken(joinGameRequest.authToken());
+        if (authToken == null) {
             throw new DataAccessException("Invalid request.");
         }
         try {
+            String username = authDAO.getUserByAuth(authToken);
             gameDAO.joinGame(username, joinGameRequest.gameID(), joinGameRequest.playerColor());
         }
         catch (DataAccessException e) {
-            throw new DataAccessException("Invalid request");
+            throw new DataAccessException(e.getMessage());
         }
     }
 

@@ -1,5 +1,6 @@
 package dataaccess;
 
+import kotlin.collections.MapAccessorsKt;
 import model.AuthData;
 import model.UserData;
 
@@ -26,11 +27,11 @@ public class MemoryAuthDAO implements  AuthDAO {
         return authToken;
     }
 
-    // returns the authData associated with a username
+    // returns the username associated with an authToken
     @Override
-    public String getAuth(String username) throws DataAccessException {
-        if (dataCollection.containsKey(username)){
-            return dataCollection.get(username);
+    public String getUserByAuth(String authToken) throws DataAccessException {
+        if (dataCollection.containsKey(authToken)){
+            return dataCollection.get(authToken);
         }
         else {
             throw new DataAccessException("Auth token not found.");
@@ -50,9 +51,9 @@ public class MemoryAuthDAO implements  AuthDAO {
     // otherwise returns null
     @Override
     public String checkAuthToken(String authToken) {
-        String token = dataCollection.get(authToken);
-        if (token != null) {
-            return token;
+        String username = dataCollection.get(authToken);
+        if (username != null) {
+            return authToken;
         }
         else {
             return null;

@@ -9,7 +9,7 @@ public class MemoryGameDAO implements GameDAO {
     public String createGame(String gameName) {
         // white player first
         // black player second
-        List<String> data = Arrays.asList(gameName, null, null);
+        List<String> data = new ArrayList<>(Arrays.asList(gameName, null, null));
         String gameID = GameDAO.createGameID();
         dataCollection.put(gameID, data);
         return gameID;
@@ -47,15 +47,15 @@ public class MemoryGameDAO implements GameDAO {
             throw new DataAccessException("Game does not exist!");
         }
         else {
-            var data = getGameData(gameID);
-            if ((playerColor == "white") && (data.get(1) == null)) {
-                dataCollection.get(gameID).add(1, username);
+            var data = dataCollection.get(gameID);
+            if ((playerColor.equals("WHITE")) && (data.get(1) == null)) {
+                dataCollection.get(gameID).set(1, username);
             }
-            else if ((playerColor == "black") && (data.get(2) == null)) {
-                dataCollection.get(gameID).add(2, username);
+            else if ((playerColor.equals("BLACK")) && (data.get(2) == null)) {
+                dataCollection.get(gameID).set(2, username);
             }
             else {
-                throw new DataAccessException("Invalid request");
+                throw new DataAccessException("Colors taken!");
             }
         }
     }
