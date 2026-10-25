@@ -21,7 +21,7 @@ public class GameHandler {
         this.gameService = gameService;
     }
 
-    private static <T> T getBodyObject(Context context, Class<T> clazz) {
+    private static <T> T getGameBodyObject(Context context, Class<T> clazz) {
         var bodyObject = new Gson().fromJson(context.body(), clazz);
 
         if (bodyObject == null) {
@@ -64,7 +64,7 @@ public class GameHandler {
         var serializer = new Gson();
 
         // convert the json request to create game request type
-        CreateGameRequest body = getBodyObject(ctx, CreateGameRequest.class);
+        CreateGameRequest body = getGameBodyObject(ctx, CreateGameRequest.class);
         String authToken = ctx.header("authorization");
         CreateGameRequest request = new CreateGameRequest(authToken, body.gameName());
 
@@ -96,7 +96,7 @@ public class GameHandler {
         var serializer = new Gson();
 
         // convert the json request to join game request type
-        JoinGameRequest body = getBodyObject(ctx, JoinGameRequest.class);
+        JoinGameRequest body = getGameBodyObject(ctx, JoinGameRequest.class);
         String authToken = ctx.header("authorization");
         JoinGameRequest request = new JoinGameRequest(authToken, body.gameID(), body.playerColor());
 

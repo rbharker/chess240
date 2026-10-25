@@ -59,8 +59,4 @@ public class MemoryAuthDAO implements  AuthDAO {
             return null;
         }
     }
-
-    public HashMap<String, String> getDataCollection() {
-        return dataCollection;
-    }
 }

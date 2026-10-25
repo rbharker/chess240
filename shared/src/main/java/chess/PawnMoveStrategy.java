@@ -67,7 +67,7 @@ public class PawnMoveStrategy implements MoveStrategy {
                 tempPosition = new ChessPosition(tempRow, myPosition.getColumn());
                 validMove = new ChessMove(myPosition, tempPosition, null);
                 // if you're staying in the board limits
-                if ((tempRow <= BoardHeight) &&
+                if ((tempRow <= boardHeight) &&
                         (tempRow >= 1)) {
                     // if there's a piece there
                     if (board.getPiece(tempPosition) != null) {
@@ -99,7 +99,7 @@ public class PawnMoveStrategy implements MoveStrategy {
                 tempPosition = new ChessPosition(tempRow, myPosition.getColumn());
                 validMove = new ChessMove(myPosition, tempPosition, null);
                 // if you're staying in the board limits
-                if ((tempRow <= BoardHeight) &&
+                if ((tempRow <= boardHeight) &&
                         (tempRow >= 1)) {
                     // if there's a piece there
                     if (board.getPiece(tempPosition) != null) {
@@ -136,9 +136,9 @@ public class PawnMoveStrategy implements MoveStrategy {
         Collection<ChessMove> validMoves = new ArrayList<>();
 
         // if you're staying in the board limits
-        if ((tempCol <= BoardWidth) &&
+        if ((tempCol <= boardWidth) &&
                 (tempCol >= 1) &&
-                (tempRow <= BoardHeight) &&
+                (tempRow <= boardHeight) &&
                 (tempRow >= 1)) {
 
             ChessPosition tempPosition = new ChessPosition(tempRow, tempCol);

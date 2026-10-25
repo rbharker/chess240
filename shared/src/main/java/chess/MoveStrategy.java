@@ -5,8 +5,8 @@ import java.util.Collection;
 
 public interface MoveStrategy {
 
-    int BoardHeight = 8;
-    int BoardWidth = 8;
+    int boardHeight = 8;
+    int boardWidth = 8;
 
     Collection<ChessMove> validMoves(ChessGame.TeamColor color, ChessBoard board, ChessPosition myPosition);
 
@@ -15,9 +15,9 @@ public interface MoveStrategy {
         int tempCol = myPosition.getColumn() + x;
 
         // if you're staying in the board limits
-        if ((tempCol <= BoardWidth) &&
+        if ((tempCol <= boardWidth) &&
                 (tempCol >= 1) &&
-                (tempRow <= BoardHeight) &&
+                (tempRow <= boardHeight) &&
                 (tempRow >= 1)) {
 
             ChessPosition tempPosition = new ChessPosition(tempRow, tempCol);
@@ -49,9 +49,9 @@ public interface MoveStrategy {
         Collection<ChessMove> validMoves = new ArrayList<>();
 
         // if you're staying in the board limits
-        while ((tempCol <= BoardWidth) &&
+        while ((tempCol <= boardWidth) &&
                 (tempCol >= 1) &&
-                (tempRow <= BoardHeight) &&
+                (tempRow <= boardHeight) &&
                 (tempRow >= 1)) {
 
             ChessPosition tempPosition = new ChessPosition(tempRow, tempCol);

@@ -10,7 +10,7 @@ import service.*;
 import dataaccess.*;
 import model.*;
 
-class UserTest {
+class ServiceTest {
     MemoryAuthDAO authDatabase = new MemoryAuthDAO();
     MemoryUserDAO userDatabase = new MemoryUserDAO();
     MemoryGameDAO gameDatabase = new MemoryGameDAO();
@@ -130,6 +130,15 @@ class UserTest {
         LoginResult loginResult = loginUser();
         ListGamesResult listGamesResult = listGames(loginResult.authToken());
         assertNotNull(listGamesResult.games());
+    }
+
+    @Test
+    void testClearApplication() {
+        registerUser();
+        LoginResult loginResult = loginUser();
+        CreateGameResult createGameResult = createGame(loginResult.authToken());
+        ClearApplicationResult clearApplicationResult = clearService.clearApplication();
+        assertNull(clearApplicationResult.result());
     }
 
 }

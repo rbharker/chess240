@@ -154,16 +154,13 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         // try all of the opponent's pieces possible moves
-        // if one of the moves ends in the kings position
-        // that person is in check
+        // if one of the moves ends in the kings position, that person is in check
 
         // get a map of position : piece for the other team
         Map<ChessPosition, ChessPiece> pieces = getBoard().getOtherPieces(teamColor);
         ChessPosition kingPosition = currentBoard.getKingPosition(teamColor);
-        // for each piece in the map
-        // check all of the valid moves for that piece
-        // if any of those moves captures the king: return true
-        // else: return false
+        // for each piece, check all of the valid moves for that piece
+        // if any of those moves captures the king: return true; else: return false
         for (Map.Entry<ChessPosition, ChessPiece> piece : pieces.entrySet()) {
             Collection<ChessMove> tempMoves = piece.getValue().pieceMoves(currentBoard, piece.getKey());
             for (ChessMove move : tempMoves) {

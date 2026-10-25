@@ -22,7 +22,7 @@ public class UserHandler {
         this.userService = userService;
     }
 
-    private static <T> T getBodyObject(Context context, Class<T> clazz) {
+    private static <T> T getUserBodyObject(Context context, Class<T> clazz) {
         var bodyObject = new Gson().fromJson(context.body(), clazz);
 
         if (bodyObject == null) {
@@ -39,7 +39,7 @@ public class UserHandler {
         var serializer = new Gson();
 
         // convert the json request to my request type
-        RegisterRequest request = getBodyObject(ctx, RegisterRequest.class);
+        RegisterRequest request = getUserBodyObject(ctx, RegisterRequest.class);
 
         // register the user and return the result as a json object
         try {
@@ -69,7 +69,7 @@ public class UserHandler {
         var serializer = new Gson();
 
         // convert the json request to my request type
-        LoginRequest request = getBodyObject(ctx, LoginRequest.class);
+        LoginRequest request = getUserBodyObject(ctx, LoginRequest.class);
 
         // login the user and return the result as a json object
         try {
