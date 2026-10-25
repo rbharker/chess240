@@ -15,7 +15,7 @@ import service.GameService;
     Class that contains handlers for each game endpoint
 */
 public class GameHandler {
-    private GameService gameService;
+    private final GameService gameService;
 
     public GameHandler(GameService gameService) {
         this.gameService = gameService;
@@ -79,7 +79,12 @@ public class GameHandler {
         } catch (DataAccessException e) {
             var excp = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()),
                     "success", false));
-            ctx.status(401);
+            if (e.getMessage().equals("unauthorized")) {
+                ctx.status(401);
+            }
+            else if (e.getMessage().equals("bad request")) {
+                ctx.status(400);
+            }
             ctx.json(excp);
         }
     }

@@ -15,7 +15,7 @@ import service.ClearService;
     Class that contains handler for the clear database endpoint
 */
 public class ClearHandler {
-    private ClearService clearService;
+    private final ClearService clearService;
 
     public ClearHandler(ClearService clearService) {
         this.clearService = clearService;

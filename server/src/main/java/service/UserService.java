@@ -15,7 +15,9 @@ public class UserService {
 
     // register a new user if the username isn't already taken
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
-
+        if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null) {
+            throw new DataAccessException("bad request");
+        }
         try {
             UserData userData = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
             AuthData authData = new AuthData(null, registerRequest.username());
@@ -29,9 +31,12 @@ public class UserService {
     }
 
     public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
+        if (loginRequest.username() == null || loginRequest.password() == null) {
+            throw new DataAccessException("bad request");
+        }
         try {
             var userData = userDAO.getUser(loginRequest.username());
-            if (!userData.password().equals(loginRequest.password())) {
+            if (!(userData.password().equals(loginRequest.password()))) {
                 throw new DataAccessException("unauthorized");
             }
             AuthData authData = new AuthData(null, userData.username());

@@ -4,6 +4,7 @@ import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
 import dataaccess.MemoryUserDAO;
+import model.GameData;
 
 import java.util.Collection;
 import java.util.List;
@@ -19,16 +20,20 @@ public class GameService {
     }
 
     public ListGamesResult listGames(ListGamesRequest listGamesRequest) throws DataAccessException {
-        String username = authDAO.checkAuthToken(listGamesRequest.authToken());
-        if (username == null) {
+        String authToken = authDAO.checkAuthToken(listGamesRequest.authToken());
+        if (authToken == null) {
             throw new DataAccessException("unauthorized");
         }
-        List<List<String>> gamesList = gameDAO.getGamesList();
-        ListGamesResult result = new ListGamesResult(gamesList);
+        List<GameData> games = gameDAO.listGames();
+        ListGamesResult result = new ListGamesResult(games);
         return result;
     }
 
     public CreateGameResult createGame(CreateGameRequest createGameRequest) throws DataAccessException {
+        if (createGameRequest.gameName() == null) {
+            throw new DataAccessException("bad request");
+        }
+
         String authToken = authDAO.checkAuthToken(createGameRequest.authToken());
         if (authToken == null) {
             throw new DataAccessException("unauthorized");

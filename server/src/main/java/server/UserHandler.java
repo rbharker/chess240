@@ -16,7 +16,7 @@ import service.UserService;
 */
 public class UserHandler {
 
-    private UserService userService;
+    private final UserService userService;
 
     public UserHandler(UserService userService) {
         this.userService = userService;
@@ -52,7 +52,12 @@ public class UserHandler {
         } catch (DataAccessException e) {
             var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()),
                     "success", false));
-            ctx.status(403);
+            if (e.getMessage().equals("already taken")) {
+                ctx.status(403);
+            }
+            else if (e.getMessage().equals("bad request")) {
+                ctx.status(400);
+            }
             ctx.json(body);
         }
     }

@@ -1,4 +1,7 @@
 package dataaccess;
+import kotlin.text.UStringsKt;
+import model.GameData;
+
 import java.util.*;
 
 public class MemoryGameDAO implements GameDAO {
@@ -17,12 +20,12 @@ public class MemoryGameDAO implements GameDAO {
 
     // returns a list of all active games
     @Override
-    public List<List<String>> getGamesList() {
-        List<List<String>> gameList = new ArrayList<>();
+    public List<GameData> listGames() {
+        List<GameData> gameList = new ArrayList<>();
         for (Map.Entry<String, List<String>> entry : dataCollection.entrySet()) {
-            List<String> data = new ArrayList<>();
-            data.addAll(entry.getValue());
-            gameList.add(data);
+            String gameId = entry.getKey();
+            GameData game = new GameData(Integer.parseInt(gameId), entry.getValue().get(0), entry.getValue().get(1), entry.getValue().get(2));
+            gameList.add(game);
         }
         return gameList;
     }
@@ -48,11 +51,17 @@ public class MemoryGameDAO implements GameDAO {
         }
         else {
             var data = dataCollection.get(gameID);
+            if (playerColor == null) {
+                throw new DataAccessException("bad request");
+            }
+            if (!(playerColor.equals("WHITE") || playerColor.equals("BLACK"))) {
+                throw new DataAccessException("bad request");
+            }
             if ((playerColor.equals("WHITE")) && (data.get(0) == null)) {
-                dataCollection.get(gameID).set(1, username);
+                dataCollection.get(gameID).set(0, username);
             }
             else if ((playerColor.equals("BLACK")) && (data.get(1) == null)) {
-                dataCollection.get(gameID).set(2, username);
+                dataCollection.get(gameID).set(1, username);
             }
             else {
                 throw new DataAccessException("already taken");

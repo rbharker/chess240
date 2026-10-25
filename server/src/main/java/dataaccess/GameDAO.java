@@ -12,7 +12,7 @@ public interface GameDAO {
     String createGame(String gameName);
 
     // returns a list of all active games
-    List<List<String>> getGamesList() throws DataAccessException;
+    List<GameData> listGames() throws DataAccessException;
 
     // adds a user to the specified team and game if possible
     void joinGame(String username, String gameID, String playerColor) throws DataAccessException;
