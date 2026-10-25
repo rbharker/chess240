@@ -21,8 +21,9 @@ public class GameHandler {
     public void listGamesHandler(Context ctx) {
         var serializer = new Gson();
 
-        // convert the json request to my request type
-        ListGamesRequest request = new ListGamesRequest(ctx.header("authorization"));
+        // convert the json request to list games request type
+        String authToken = ctx.header("authorization");
+        ListGamesRequest request = new ListGamesRequest(authToken);
 
         // register the user and return the result as a json object
         try {
