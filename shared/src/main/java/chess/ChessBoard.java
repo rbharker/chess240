@@ -11,8 +11,8 @@ import java.util.*;
 public class ChessBoard {
 
     private final ChessPiece[][] board = new ChessPiece[8][8];
-    private final int BOARD_LENGTH = 8;
-    private final int BOARD_WIDTH = 8;
+    private final int board_length = 8;
+    private final int board_width = 8;
 
     public ChessBoard() {
         
@@ -45,12 +45,12 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        for (int i = 0; i<BOARD_LENGTH; i++) {
-            for (int j = 0; j<BOARD_WIDTH; j++) {
+        for (int i = 0; i<board_length; i++) {
+            for (int j = 0; j<board_width; j++) {
                 board[i][j] = null;
             }
         }
-        for (int i = 0; i<BOARD_LENGTH; i++) {
+        for (int i = 0; i<board_length; i++) {
             board[1][i] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
             board[6][i] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
         }
@@ -86,8 +86,8 @@ public class ChessBoard {
         Map<ChessPosition, ChessPiece> pieces = new HashMap<>();
 
         // for each position on the board
-        for (int i = 0; i<BOARD_LENGTH; i++) {
-            for (int j=0; j<BOARD_WIDTH; j++) {
+        for (int i = 0; i<board_length; i++) {
+            for (int j=0; j<board_width; j++) {
                 // if a piece exists on the opposing team
                 if (board[i][j] != null && board[i][j].getTeamColor() != color) {
                     ChessPosition position = new ChessPosition(i+1, j+1);
@@ -110,8 +110,8 @@ public class ChessBoard {
         Map<ChessPosition, ChessPiece> pieces = new HashMap<>();
 
         // for each space on the board
-        for (int i = 0; i<BOARD_LENGTH; i++) {
-            for (int j=0; j<BOARD_WIDTH; j++) {
+        for (int i = 0; i<board_length; i++) {
+            for (int j=0; j<board_width; j++) {
                 // if a piece exists on your team
                 if (board[i][j] != null && board[i][j].getTeamColor() == color) {
                     ChessPosition position = new ChessPosition(i+1, j+1);
@@ -134,8 +134,8 @@ public class ChessBoard {
         ChessPosition kingPosition = null;
 
         // check each space on the board
-        for (int i = 0; i<BOARD_LENGTH; i++) {
-            for (int j=0; j<BOARD_WIDTH; j++) {
+        for (int i = 0; i<board_length; i++) {
+            for (int j=0; j<board_width; j++) {
                 // if you find that team's king
                 if (board[i][j] != null && board[i][j].getTeamColor() == color) {
                     if (board[i][j].getPieceType() == ChessPiece.PieceType.KING) {

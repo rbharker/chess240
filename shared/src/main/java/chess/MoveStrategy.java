@@ -87,34 +87,34 @@ public interface MoveStrategy {
         int tempCol = myPosition.getColumn() + x;
         Collection<ChessMove> validMoves = new ArrayList<>();
 
-        // if you're staying in the board limits
+        // if the pawn is staying in the board limits
         if ((tempCol <= BOARD_WIDTH) &&
                 (tempCol >= 1) &&
                 (tempRow <= BOARD_HEIGHT) &&
                 (tempRow >= 1)) {
 
-            ChessPosition tempPosition = new ChessPosition(tempRow, tempCol);
-            ChessMove validMove = new ChessMove(myPosition, tempPosition, null);
+            ChessPosition tempPawnPosition = new ChessPosition(tempRow, tempCol);
+            ChessMove validPawnMove = new ChessMove(myPosition, tempPawnPosition, null);
             // if there's a piece there
-            if (board.getPiece(tempPosition) != null) {
+            if (board.getPiece(tempPawnPosition) != null) {
                 // if the piece is your color, you can't move there
-                if (board.getPiece(tempPosition).getTeamColor() == color) {
+                if (board.getPiece(tempPawnPosition).getTeamColor() == color) {
                     return null;
                 }
                 // if the piece is the other color, you can move there
                 else {
                     if (tempRow == 8 || tempRow == 1) {
-                        ChessMove validMove1 = new ChessMove(myPosition, tempPosition, ChessPiece.PieceType.ROOK);
-                        ChessMove validMove2 = new ChessMove(myPosition, tempPosition, ChessPiece.PieceType.BISHOP);
-                        ChessMove validMove3 = new ChessMove(myPosition, tempPosition, ChessPiece.PieceType.KNIGHT);
-                        ChessMove validMove5 = new ChessMove(myPosition, tempPosition, ChessPiece.PieceType.QUEEN);
+                        ChessMove validMove1 = new ChessMove(myPosition, tempPawnPosition, ChessPiece.PieceType.ROOK);
+                        ChessMove validMove2 = new ChessMove(myPosition, tempPawnPosition, ChessPiece.PieceType.BISHOP);
+                        ChessMove validMove3 = new ChessMove(myPosition, tempPawnPosition, ChessPiece.PieceType.KNIGHT);
+                        ChessMove validMove5 = new ChessMove(myPosition, tempPawnPosition, ChessPiece.PieceType.QUEEN);
                         validMoves.add(validMove1);
                         validMoves.add(validMove2);
                         validMoves.add(validMove3);
                         validMoves.add(validMove5);
                     }
                     else {
-                        validMoves.add(validMove);
+                        validMoves.add(validPawnMove);
                     }
                     return validMoves;
                 }

@@ -139,4 +139,11 @@ class ServiceTest {
         assertNull(clearApplicationResult.result());
     }
 
+    @Test
+    void testIncorrectPasswordThrowsException() {
+        registerUser();
+        LoginRequest loginRequest = new LoginRequest("username", "wrongpassword");
+        assertThrows(DataAccessException.class, () -> userService.login(loginRequest));
+    }
+
 }
