@@ -67,8 +67,8 @@ public class DatabaseManager {
 
     private static void loadProperties(Properties props) {
         databaseName = props.getProperty("db.name");
-        dbUsername = props.getProperty("root'@'localhost");
-        dbPassword = props.getProperty("classserver");
+        dbUsername = props.getProperty("db.user");
+        dbPassword = props.getProperty("db.password");
 
         var host = props.getProperty("db.host");
         var port = Integer.parseInt(props.getProperty("db.port"));

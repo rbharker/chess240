@@ -1,8 +1,6 @@
 package server;
 
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
-import dataaccess.MemoryUserDAO;
+import dataaccess.*;
 import io.javalin.*;
 import service.ClearService;
 import service.GameService;
@@ -16,6 +14,14 @@ public class Server {
     MemoryUserDAO userDatabase = new MemoryUserDAO();
     MemoryGameDAO gameDatabase = new MemoryGameDAO();
     MemoryAuthDAO authDatabase = new MemoryAuthDAO();
+
+    {
+        try {
+            MySQLAuthDAO mySQLAuthDAO = new MySQLAuthDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     // initialize service classes
     UserService userService = new UserService(userDatabase, authDatabase);

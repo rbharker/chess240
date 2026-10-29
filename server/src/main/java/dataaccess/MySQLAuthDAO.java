@@ -1,8 +1,6 @@
 package dataaccess;
 
-import com.google.gson.Gson;
-import exception.ResponseException;
-import model.*;
+import model.AuthData;
 
 import java.sql.*;
 
@@ -12,7 +10,7 @@ import static java.sql.Types.NULL;
 
 public class MySQLAuthDAO implements AuthDAO {
 
-    public MySQLAuthDAO() throws ResponseException {
+    public MySQLAuthDAO() throws DataAccessException {
         configureDatabase();
     }
 
@@ -24,13 +22,13 @@ public class MySQLAuthDAO implements AuthDAO {
               `username` varchar(256) NOT NULL,
               `json` TEXT DEFAULT NULL,
               PRIMARY KEY (`id`),
-              INDEX(type),
-              INDEX(name)
+              INDEX(authtoken),
+              INDEX(username)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
 
-    private void configureDatabase() throws ResponseException {
+    private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (Connection conn = DatabaseManager.getConnection()) {
             for (String statement : createStatements) {
@@ -39,7 +37,71 @@ public class MySQLAuthDAO implements AuthDAO {
                 }
             }
         } catch (SQLException ex) {
-            throw new ResponseException(ResponseException.Code.ServerError, String.format("Unable to configure database: %s", ex.getMessage()));
+            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
         }
     }
+
+    private int executeUpdate(String statement, Object... params) throws DataAccessException {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (PreparedStatement ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
+                for (int i = 0; i < params.length; i++) {
+                    Object param = params[i];
+                    if (param instanceof String p) ps.setString(i + 1, p);
+                    else if (param instanceof Integer p) ps.setInt(i + 1, p);
+                    else if (param instanceof AuthData p) ps.setString(i + 1, p.toString());
+                    else if (param == null) ps.setNull(i + 1, NULL);
+                }
+                ps.executeUpdate();
+
+                ResultSet rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+
+                return 0;
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
+        }
+    }
+
+    @Override
+    public void clearAuth() {
+        var statement = "TRUNCATE authData";
+        try{
+            executeUpdate(statement);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public String createAuth(AuthData data) {
+        String authToken = AuthDAO.generateToken();
+        var statement = "INSERT INTO authData (authToken, username, json) VALUES (?, ?, ?)";
+        try{
+            executeUpdate(statement, authToken, data.username(), data);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+        return authToken;
+    }
+
+    @Override
+    public String getUserByAuth(String authToken) throws DataAccessException {
+
+
+        return "";
+    }
+
+    @Override
+    public String deleteAuth(String authToken) {
+        return "";
+    }
+
+    @Override
+    public String checkAuthToken(String authToken) {
+        return "";
+    }
+}
 
