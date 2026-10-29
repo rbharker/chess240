@@ -60,7 +60,7 @@ public class MySQLAuthDAO implements AuthDAO {
 
                 return 0;
             }
-        } catch (SQLException e) {
+        } catch (DataAccessException | SQLException e) {
             throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
         }
     }
@@ -89,19 +89,43 @@ public class MySQLAuthDAO implements AuthDAO {
 
     @Override
     public String getUserByAuth(String authToken) throws DataAccessException {
-
-
-        return "";
+        String statement = "SELECT username FROM authData WHERE authToken = ?";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setString(1, authToken);
+                var rs = ps.executeQuery();
+                rs.next();
+                return rs.getString("username");
+            }
+        } catch (DataAccessException | SQLException e) {
+            throw new DataAccessException(String.format("unable to retrieve user: %s", e.getMessage()));
+        }
     }
 
     @Override
     public String deleteAuth(String authToken) {
-        return "";
+        var statement = "DELETE authToken, username FROM authData WHERE authToken = ?";
+        try{
+            executeUpdate(statement, authToken);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
     }
 
     @Override
     public String checkAuthToken(String authToken) {
-        return "";
+        var statement = "SELECT authToken FROM authData WHERE authToken = ?";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setString(1, authToken);
+                var rs = ps.executeQuery();
+                rs.next();
+                return rs.getString("authToken");
+            }
+        } catch (DataAccessException | SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
 
