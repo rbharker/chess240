@@ -42,6 +42,7 @@ public class UserService {
         }
         try {
             var userData = userDAO.getUser(loginRequest.username());
+            // need to change this to verifyUser
             if (!(userData.password().equals(loginRequest.password()))) {
                 throw new DataAccessException("unauthorized");
             }

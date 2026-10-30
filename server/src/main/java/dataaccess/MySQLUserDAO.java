@@ -39,9 +39,10 @@ public class MySQLUserDAO implements UserDAO {
 
     @Override
     public void createUser(UserData userData) throws DataAccessException {
-        String statement = "SELECT username FROM userData";
+        String statement = "SELECT username FROM userData where username = ?";
         try (var conn = DatabaseManager.getConnection()) {
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setString(1, userData.username());
                 var rs = ps.executeQuery();
                 rs.next();
                 if (rs.getString("username") == userData.username()) {

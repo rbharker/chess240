@@ -1,18 +1,19 @@
 package dataaccess;
+import chess.ChessGame;
 import kotlin.text.UStringsKt;
 import model.GameData;
 
 import java.util.*;
 
 public class MemoryGameDAO implements GameDAO {
-    HashMap<String, List<String>> dataCollection = new HashMap<>();
+    HashMap<String, List<Object>> dataCollection = new HashMap<>();
 
     // adds a new game and its data to the database
     @Override
     public String createGame(String gameName) {
         // white player first
         // black player second
-        List<String> data = new ArrayList<>(Arrays.asList(null, null, gameName));
+        List<Object> data = new ArrayList<>(Arrays.asList(null, null, gameName, new ChessGame()));
         String gameID = GameDAO.createGameID();
         dataCollection.put(gameID, data);
         return gameID;
@@ -22,21 +23,23 @@ public class MemoryGameDAO implements GameDAO {
     @Override
     public List<GameData> listGames() {
         List<GameData> gameList = new ArrayList<>();
-        for (Map.Entry<String, List<String>> entry : dataCollection.entrySet()) {
+        for (Map.Entry<String, List<Object>> entry : dataCollection.entrySet()) {
             String gameId = entry.getKey();
-            GameData game = new GameData(Integer.parseInt(gameId), entry.getValue().get(0), entry.getValue().get(1), entry.getValue().get(2));
+            GameData game = new GameData(Integer.parseInt(gameId), (String) entry.getValue().get(0),
+                                                                    (String) entry.getValue().get(1),
+                                                                    (String) entry.getValue().get(2));
             gameList.add(game);
         }
         return gameList;
     }
 
     @Override
-    public List<String> getGameData(String gameID) throws DataAccessException {
+    public List<Object> getGameData(String gameID) throws DataAccessException {
         if (!dataCollection.containsKey(gameID)) {
             throw new DataAccessException("game does not exist");
         }
         else {
-            List<String> data = new ArrayList<>();
+            List<Object> data = new ArrayList<>();
             data.add(gameID);
             data.addAll(dataCollection.get(gameID));
             return data;

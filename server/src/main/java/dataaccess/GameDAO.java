@@ -18,7 +18,7 @@ public interface GameDAO {
     void joinGame(String username, String gameID, String playerColor) throws DataAccessException;
 
     // returns the corresponding game data if it exists
-    List<String> getGameData(String gameID) throws DataAccessException;
+    List<Object> getGameData(String gameID) throws DataAccessException;
 
     // creates a random gameID
     static String createGameID() {
