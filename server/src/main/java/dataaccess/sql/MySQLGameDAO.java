@@ -1,5 +1,6 @@
 package dataaccess.sql;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
@@ -38,9 +39,9 @@ public class MySQLGameDAO implements GameDAO {
         String gameID = GameDAO.createGameID();
         GameData data = new GameData(UStringsKt.toUInt(gameID), null, null, gameName);
         Gson serializer = new Gson();
-        var updateStatement = "INSERT INTO gameData (gameID, gameName, json) VALUES (?, ?, ?)";
+        var updateStatement = "INSERT INTO gameData (gameID, gameName, game, json) VALUES (?, ?, ?, ?)";
         try{
-            DatabaseManager.executeUpdate(updateStatement, gameID, gameName, serializer.toJson(data));
+            DatabaseManager.executeUpdate(updateStatement, gameID, gameName, serializer.toJson(new ChessGame()), serializer.toJson(data));
             return gameID;
         } catch (DataAccessException e) {
             throw new RuntimeException(e);

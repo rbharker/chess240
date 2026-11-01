@@ -27,7 +27,7 @@ public class ClearHandler {
             ctx.json(jsonResult);
             ctx.status(200);
         } catch (RuntimeException e) {
-            var excp = new Gson().toJson(Map.of("message", String.format("Error: unauthorized"),
+            var excp = new Gson().toJson(Map.of("message", String.format("Error: unauthorized clear"),
                     "success", false));
             ctx.status(500);
             ctx.json(excp);
