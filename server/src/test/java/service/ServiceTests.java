@@ -2,6 +2,9 @@ package service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import dataaccess.sql.MySQLAuthDAO;
+import dataaccess.sql.MySQLGameDAO;
+import dataaccess.sql.MySQLUserDAO;
 import org.junit.jupiter.api.Test;
 import request.*;
 import dataaccess.*;

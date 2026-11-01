@@ -1,6 +1,8 @@
 package service;
 
 import dataaccess.*;
+import dataaccess.sql.MySQLAuthDAO;
+import dataaccess.sql.MySQLGameDAO;
 import model.GameData;
 import request.CreateGameRequest;
 import request.JoinGameRequest;

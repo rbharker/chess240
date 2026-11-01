@@ -1,6 +1,8 @@
 package service;
 
 import dataaccess.*;
+import dataaccess.sql.MySQLAuthDAO;
+import dataaccess.sql.MySQLUserDAO;
 import model.*;
 import request.LoginRequest;
 import request.LogoutRequest;

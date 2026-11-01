@@ -86,7 +86,7 @@ public class GameHandler {
             }
             ctx.json(excp);
         } catch (RuntimeException e) {
-            var excp = new Gson().toJson(Map.of("message", String.format("Error: unauthorized"),
+            var excp = new Gson().toJson(Map.of("message", String.format("Error: unauthorized game creation"),
                     "success", false));
             ctx.status(500);
             ctx.json(excp);
@@ -126,7 +126,7 @@ public class GameHandler {
             }
             ctx.json(excp);
         } catch (RuntimeException e) {
-            var excp = new Gson().toJson(Map.of("message", String.format("Error: unauthorized"),
+            var excp = new Gson().toJson(Map.of("message", String.format("Error: unauthorized join"),
                     "success", false));
             ctx.status(500);
             ctx.json(excp);

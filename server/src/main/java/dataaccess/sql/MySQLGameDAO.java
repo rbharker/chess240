@@ -1,9 +1,10 @@
-package dataaccess;
+package dataaccess.sql;
 
 import com.google.gson.Gson;
+import dataaccess.DataAccessException;
+import dataaccess.GameDAO;
 import kotlin.text.UStringsKt;
 import model.GameData;
-import model.UserData;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -91,15 +92,11 @@ public class MySQLGameDAO implements GameDAO {
                 ps.setString(1,gameID);
                 var rs = ps.executeQuery();
                 if (rs.next()) {
-                    if (playerColor.equals("WHITE")) {
-                        if (rs.getString("whiteUsername") != null) {
-                            throw new DataAccessException("already taken");
-                        }
+                    if (playerColor.equals("WHITE") && rs.getString("whiteUsername") != null) {
+                        throw new DataAccessException("already taken");
                     }
-                    else if (playerColor.equals("BLACK")) {
-                        if (rs.getString("blackUsername") != null) {
-                            throw new DataAccessException("already taken");
-                        }
+                    else if (playerColor.equals("BLACK") && rs.getString("blackUsername") != null) {
+                        throw new DataAccessException("already taken");
                     }
                 }
             }

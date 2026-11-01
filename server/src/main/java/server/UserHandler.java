@@ -54,7 +54,7 @@ public class UserHandler {
             }
             ctx.json(body);
         } catch (RuntimeException e) {
-            var excp = new Gson().toJson(Map.of("message", String.format("Error: unauthorized"),
+            var excp = new Gson().toJson(Map.of("message", String.format("Error: unauthorized register"),
                     "success", false));
             ctx.status(500);
             ctx.json(excp);
@@ -89,7 +89,7 @@ public class UserHandler {
             }
             ctx.json(body);
         } catch (RuntimeException e) {
-            var excp = new Gson().toJson(Map.of("message", String.format("Error: unauthorized"),
+            var excp = new Gson().toJson(Map.of("message", String.format("Error: unauthorized login"),
                     "success", false));
             ctx.status(500);
             ctx.json(excp);
@@ -123,7 +123,7 @@ public class UserHandler {
                 ctx.json(excp);
             }
             else {
-                var body = new Gson().toJson(Map.of("message", String.format("Error: %s", "unauthorized"),
+                var body = new Gson().toJson(Map.of("message", String.format("Error: %s", "unauthorized logout"),
                         "success", false));
                 ctx.status(401);
                 ctx.json(body);
