@@ -59,6 +59,7 @@ public class SQLTests {
     @Test
     void testGetUserByAuthReturnsUser() {
         clearServiceSQL.clearApplication();
+        TestHelper.registerUser();
         LoginResult result = TestHelper.loginUser();
         String username = "";
         try {
@@ -72,6 +73,7 @@ public class SQLTests {
     @Test
     void testCheckAuthTokenReturnsAuthToken() {
         clearServiceSQL.clearApplication();
+        TestHelper.registerUser();
         LoginResult result = TestHelper.loginUser();
         String token = authDatabaseSQL.checkAuthToken(result.authToken());
         assertEquals(result.authToken(), token);
@@ -140,6 +142,7 @@ public class SQLTests {
 
     @Test
     void testClearDatabases() {
+        clearServiceSQL.clearApplication();
         TestHelper.registerUser();
         LoginResult token = TestHelper.loginUser();
         clearServiceSQL.clearApplication();
