@@ -9,15 +9,16 @@ import service.UserService;
 public class Server {
     // initialize javalin
     private final Javalin javalin;
+    MySQLAuthDAO authDatabase = null;
+    MySQLUserDAO userDatabase = null;
+    MySQLGameDAO gameDatabase = null;
 
     // initialize databases
-    MemoryUserDAO userDatabase = new MemoryUserDAO();
-    MemoryGameDAO gameDatabase = new MemoryGameDAO();
-    MemoryAuthDAO authDatabase = new MemoryAuthDAO();
-
     {
         try {
-            MySQLAuthDAO mySQLAuthDAO = new MySQLAuthDAO();
+            authDatabase = new MySQLAuthDAO();
+            userDatabase = new MySQLUserDAO();
+            gameDatabase = new MySQLGameDAO();
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }

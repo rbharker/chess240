@@ -1,8 +1,6 @@
 package service;
 
-import dataaccess.DataAccessException;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
+import dataaccess.*;
 import model.GameData;
 import request.CreateGameRequest;
 import request.JoinGameRequest;
@@ -15,10 +13,10 @@ import java.util.List;
 
 public class GameService {
 
-    private MemoryAuthDAO authDAO;
-    private MemoryGameDAO gameDAO;
+    private MySQLAuthDAO authDAO;
+    private MySQLGameDAO gameDAO;
 
-    public GameService(MemoryAuthDAO authDAO, MemoryGameDAO gameDAO) {
+    public GameService(MySQLAuthDAO authDAO, MySQLGameDAO gameDAO) {
         this.authDAO = authDAO;
         this.gameDAO = gameDAO;
     }

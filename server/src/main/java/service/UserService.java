@@ -11,10 +11,10 @@ import result.RegisterResult;
 
 public class UserService {
 
-    private MemoryUserDAO userDAO;
-    private MemoryAuthDAO authDAO;
+    private MySQLUserDAO userDAO;
+    private MySQLAuthDAO authDAO;
 
-    public UserService(MemoryUserDAO userDAO, MemoryAuthDAO authDAO) {
+    public UserService(MySQLUserDAO userDAO, MySQLAuthDAO authDAO) {
         this.userDAO = userDAO;
         this.authDAO = authDAO;
     }
