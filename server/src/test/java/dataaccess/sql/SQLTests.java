@@ -141,6 +141,30 @@ public class SQLTests {
     }
 
     @Test
+    void testJoinGameThrowsException() {
+        clearServiceSQL.clearApplication();
+        String gameID = gameDatabaseSQL.createGame("name");
+        try {
+            gameDatabaseSQL.joinGame("username", gameID, "WHITE");
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+        assertThrows(DataAccessException.class, () -> gameDatabaseSQL.joinGame("second", gameID, "WHITE"));
+    }
+
+    @Test
+    void testJoinGameSecondPlayer() {
+        clearServiceSQL.clearApplication();
+        String gameID = gameDatabaseSQL.createGame("name");
+        try {
+            gameDatabaseSQL.joinGame("username", gameID, "WHITE");
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+        assertDoesNotThrow(() -> gameDatabaseSQL.joinGame("second", gameID, "BLACK"));
+    }
+
+    @Test
     void testClearDatabases() {
         clearServiceSQL.clearApplication();
         TestHelper.registerUser();
