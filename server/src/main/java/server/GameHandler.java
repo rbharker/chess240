@@ -48,6 +48,11 @@ public class GameHandler {
                     "success", false));
             ctx.status(401);
             ctx.json(listGamesBody);
+        } catch (RuntimeException e) {
+            var listGamesBody = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()),
+                    "success", false));
+            ctx.status(500);
+            ctx.json(listGamesBody);
         }
     }
 
@@ -79,6 +84,11 @@ public class GameHandler {
             else if (e.getMessage().equals("bad request")) {
                 ctx.status(400);
             }
+            ctx.json(excp);
+        } catch (RuntimeException e) {
+            var excp = new Gson().toJson(Map.of("message", String.format("Error: unauthorized"),
+                    "success", false));
+            ctx.status(500);
             ctx.json(excp);
         }
     }
@@ -114,6 +124,11 @@ public class GameHandler {
             else if (e.getMessage().equals("already taken")) {
                 ctx.status(403);
             }
+            ctx.json(excp);
+        } catch (RuntimeException e) {
+            var excp = new Gson().toJson(Map.of("message", String.format("Error: unauthorized"),
+                    "success", false));
+            ctx.status(500);
             ctx.json(excp);
         }
     }

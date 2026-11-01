@@ -1,6 +1,7 @@
 package dataaccess;
 
 import com.google.gson.Gson;
+import kotlin.text.UStringsKt;
 import model.GameData;
 import model.UserData;
 
@@ -19,14 +20,14 @@ public class MySQLGameDAO implements GameDAO {
             """
             CREATE TABLE IF NOT EXISTS  gameData (
               `id` int NOT NULL AUTO_INCREMENT,
-              `gameID` int NOT NULL AUTO_INCREMENT,
-              `whiteUsername` varchar(256) NOT NULL DEFAULT NULL,
-              `blackUsername` varchar(256) NOT NULL DEFAULT NULL,
+              `gameID` int NOT NULL,
+              `whiteUsername` varchar(256) DEFAULT NULL,
+              `blackUsername` varchar(256) DEFAULT NULL,
               `gameName` varchar(256) NOT NULL,
               `game` TEXT DEFAULT NULL,
               `json` TEXT DEFAULT NULL,
               PRIMARY KEY (`id`),
-              INDEX(username),
+              INDEX(gameID)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
@@ -34,9 +35,11 @@ public class MySQLGameDAO implements GameDAO {
     @Override
     public String createGame(String gameName) {
         String gameID = GameDAO.createGameID();
-        var updateStatement = "INSERT INTO gameData (gameID, gameName) VALUES (?, ?)";
+        GameData data = new GameData(UStringsKt.toUInt(gameID), null, null, gameName);
+        Gson serializer = new Gson();
+        var updateStatement = "INSERT INTO gameData (gameID, gameName, json) VALUES (?, ?, ?)";
         try{
-            DatabaseManager.executeUpdate(updateStatement, gameID, gameName);
+            DatabaseManager.executeUpdate(updateStatement, gameID, gameName, serializer.toJson(data));
             return gameID;
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
@@ -56,13 +59,18 @@ public class MySQLGameDAO implements GameDAO {
                 }
                 return data;
             }
-        } catch (DataAccessException | SQLException e) {
-            throw new DataAccessException(String.format("unable to retrieve user: %s", e.getMessage()));
+        } catch (DataAccessException e) {
+            throw new DataAccessException("game does not exist");
+        } catch (SQLException e) {
+            throw new RuntimeException("bad request");
         }
     }
 
     @Override
     public void joinGame(String username, String gameID, String playerColor) throws DataAccessException {
+        Gson serializer = new Gson();
+
+        // check the color is not null
         if (playerColor == null) {
             throw new DataAccessException("bad request");
         }
@@ -70,45 +78,67 @@ public class MySQLGameDAO implements GameDAO {
             throw new DataAccessException("bad request");
         }
 
+        // check if the color is already being played
         String statement = "";
-        if (playerColor == "WHITE") {
+        if (playerColor.equals("WHITE")) {
             statement = "SELECT whiteUsername FROM gameData where gameID = ?";
         }
-        else if (playerColor == "BLACK") {
+        else if (playerColor.equals("BLACK")) {
             statement = "SELECT blackUsername FROM gameData where gameID = ?";
         }
         try (var conn = DatabaseManager.getConnection()) {
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
                 ps.setString(1,gameID);
                 var rs = ps.executeQuery();
-                rs.next();
-                if (playerColor == "WHITE") {
-                    if (rs.getString("whiteUsername") != "NULL") {
-                        throw new DataAccessException("already taken");
+                if (rs.next()) {
+                    if (playerColor.equals("WHITE")) {
+                        if (rs.getString("whiteUsername") != null) {
+                            throw new DataAccessException("already taken");
+                        }
                     }
-                }
-                else if (playerColor == "BLACK") {
-                    if (rs.getString("blackUsername") != "NULL") {
-                        throw new DataAccessException("already taken");
-                    }
-                }
-                else {
-                    String updateStatement = "";
-                    if (playerColor == "WHITE") {
-                        updateStatement = "INSERT INTO gameData (whiteUsername) VALUES (?)";
-                    }
-                    else if (playerColor == "BLACK") {
-                        updateStatement = "INSERT INTO gameData (blackUsername) VALUES (?)";
-                    }
-                    try {
-                        DatabaseManager.executeUpdate(updateStatement, username);
-                    } catch (DataAccessException e) {
-                        throw new RuntimeException(e);
+                    else if (playerColor.equals("BLACK")) {
+                        if (rs.getString("blackUsername") != null) {
+                            throw new DataAccessException("already taken");
+                        }
                     }
                 }
             }
+        } catch (DataAccessException e) {
+            throw e;
+        } catch (SQLException e) {
+            throw new RuntimeException("bad request");
+        }
+
+        // if the color is not being played
+        String updateStatement = "";
+        GameData updated = null;
+        String gameNameStatement = "SELECT json FROM gameData where gameID = ?";
+        String json = "";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (PreparedStatement ps = conn.prepareStatement(gameNameStatement)) {
+                ps.setString(1, gameID);
+                var rs = ps.executeQuery();
+                rs.next();
+                json = rs.getString("json");
+            }
         } catch (DataAccessException | SQLException e) {
-            throw new DataAccessException(String.format("unable to join game: %s", e.getMessage()));
+            throw new DataAccessException("bad request");
+        }
+
+        GameData oldData = serializer.fromJson(json, GameData.class);
+
+        if (playerColor.equals("WHITE")) {
+            updateStatement = "UPDATE gameData SET whiteUsername = ?, json = ? WHERE gameID = ?";
+            updated = new GameData(oldData.gameID(), username, oldData.blackUsername(), oldData.gameName());
+        }
+        else if (playerColor.equals("BLACK")) {
+            updateStatement = "UPDATE gameData SET blackUsername = ?, json = ? WHERE gameID = ?";
+            updated = new GameData(oldData.gameID(), oldData.whiteUsername(), username, oldData.gameName());
+        }
+        try {
+            DatabaseManager.executeUpdate(updateStatement, username, serializer.toJson(updated), gameID);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -128,7 +158,7 @@ public class MySQLGameDAO implements GameDAO {
                 return data;
             }
         } catch (DataAccessException | SQLException e) {
-            throw new DataAccessException(String.format("unable to retrieve user: %s", e.getMessage()));
+            throw new DataAccessException("game does not exist");
         }
     }
 

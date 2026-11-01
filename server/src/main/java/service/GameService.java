@@ -22,7 +22,15 @@ public class GameService {
     }
 
     public ListGamesResult listGames(ListGamesRequest listGamesRequest) throws DataAccessException {
-        String authToken = authDAO.checkAuthToken(listGamesRequest.authToken());
+        String authToken = "";
+        try {
+            authToken = authDAO.checkAuthToken(listGamesRequest.authToken());
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("failed to get connection")) {
+                throw new RuntimeException(e.getMessage());
+            }
+            throw new DataAccessException("unauthorized");
+        }
         if (authToken == null) {
             throw new DataAccessException("unauthorized");
         }
@@ -36,7 +44,15 @@ public class GameService {
             throw new DataAccessException("bad request");
         }
 
-        String authToken = authDAO.checkAuthToken(createGameRequest.authToken());
+        String authToken = "";
+        try {
+            authToken = authDAO.checkAuthToken(createGameRequest.authToken());
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("failed to get connection")) {
+                throw new RuntimeException(e.getMessage());
+            }
+            throw new DataAccessException("unauthorized");
+        }
         if (authToken == null) {
             throw new DataAccessException("unauthorized");
         }
@@ -46,7 +62,15 @@ public class GameService {
     }
 
     public JoinGameResult joinGame(JoinGameRequest joinGameRequest) throws DataAccessException {
-        String authToken = authDAO.checkAuthToken(joinGameRequest.authToken());
+        String authToken = "";
+        try {
+            authToken = authDAO.checkAuthToken(joinGameRequest.authToken());
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("failed to get connection")) {
+                throw e;
+            }
+            throw new DataAccessException("unauthorized");
+        }
         if (authToken == null) {
             throw new DataAccessException("unauthorized");
         }

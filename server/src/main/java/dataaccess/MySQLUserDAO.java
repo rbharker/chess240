@@ -22,7 +22,7 @@ public class MySQLUserDAO implements UserDAO {
               `email` varchar(256) NOT NULL,
               `json` TEXT DEFAULT NULL,
               PRIMARY KEY (`id`),
-              INDEX(username),
+              INDEX(username)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
@@ -39,28 +39,32 @@ public class MySQLUserDAO implements UserDAO {
 
     @Override
     public void createUser(UserData userData) throws DataAccessException {
+        Gson serializer = new Gson();
         String statement = "SELECT username FROM userData where username = ?";
         try (var conn = DatabaseManager.getConnection()) {
+            // check if the username already exists
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
                 ps.setString(1, userData.username());
                 var rs = ps.executeQuery();
-                rs.next();
-                if (rs.getString("username") == userData.username()) {
+                if (rs.next()) {
                     throw new DataAccessException("already taken");
                 }
                 else {
                     var updateStatement = "INSERT INTO userData (username, password, email, json) VALUES (?, ?, ?, ?)";
                     String hashedPassword = hashUserPassword(userData.password());
+                    UserData updatedData = new UserData(userData.username(), hashedPassword, userData.email());
                     try{
                         DatabaseManager.executeUpdate(updateStatement, userData.username(),
-                                hashedPassword, userData.email());
-                    } catch (DataAccessException e) {
-                        throw new RuntimeException(e);
+                                hashedPassword, userData.email(), serializer.toJson(updatedData));
+                    } catch (DataAccessException e2) {
+                        throw new RuntimeException(e2);
                     }
                 }
+            } catch (DataAccessException e) {
+                throw new DataAccessException("already taken");
             }
-        } catch (DataAccessException | SQLException e) {
-            throw new DataAccessException(String.format("unable to retrieve user: %s", e.getMessage()));
+        } catch (SQLException e) {
+            throw new RuntimeException("already taken");
         }
     }
 
@@ -72,12 +76,19 @@ public class MySQLUserDAO implements UserDAO {
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
                 ps.setString(1, username);
                 var rs = ps.executeQuery();
-                rs.next();
-                UserData data = serializer.fromJson(rs.getString("json"), UserData.class);
-                return data;
+                if (rs.next()) {
+                    UserData data = serializer.fromJson(rs.getString("json"), UserData.class);
+                    return data;
+                }
+                else {
+                    throw new DataAccessException("unauthorized");
+                }
             }
         } catch (DataAccessException | SQLException e) {
-            throw new DataAccessException(String.format("unable to retrieve user: %s", e.getMessage()));
+            if (e.getMessage().contains("connection")) {
+                throw new RuntimeException(e.getMessage());
+            }
+            throw new DataAccessException("unauthorized");
         }
     }
 
@@ -86,7 +97,7 @@ public class MySQLUserDAO implements UserDAO {
         return hashedPassword;
     }
 
-    boolean verifyPassword(String providedClearTextPassword, String hashedPassword) {
+    public boolean verifyPassword(String providedClearTextPassword, String hashedPassword) {
         return BCrypt.checkpw(providedClearTextPassword, hashedPassword);
     }
 }

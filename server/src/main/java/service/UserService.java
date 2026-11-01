@@ -32,6 +32,9 @@ public class UserService {
             RegisterResult result = new RegisterResult(userData.username(), authToken);
             return result;
         } catch (DataAccessException e) {
+            if (e.getMessage().contains("failed to get connection")) {
+                throw new RuntimeException(e.getMessage());
+            }
             throw e;
         }
     }
@@ -42,8 +45,7 @@ public class UserService {
         }
         try {
             var userData = userDAO.getUser(loginRequest.username());
-            // need to change this to verifyUser
-            if (!(userData.password().equals(loginRequest.password()))) {
+            if (!(userDAO.verifyPassword(loginRequest.password(), userData.password()))) {
                 throw new DataAccessException("unauthorized");
             }
             AuthData authData = new AuthData(null, userData.username());
@@ -52,12 +54,23 @@ public class UserService {
             return result;
         }
         catch (DataAccessException e) {
+            if (e.getMessage().contains("failed to get connection")) {
+                throw new RuntimeException(e.getMessage());
+            }
             throw e;
         }
     }
 
     public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException {
-        String authToken = authDAO.checkAuthToken(logoutRequest.authData());
+        String authToken = "";
+        try {
+            authToken = authDAO.checkAuthToken(logoutRequest.authData());
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("failed to get connection")) {
+                throw new RuntimeException(e.getMessage());
+            }
+            throw e;
+        }
         if (authToken != null) {
             authDAO.deleteAuth(authToken);
             return new LogoutResult(null);

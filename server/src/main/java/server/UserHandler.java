@@ -53,6 +53,11 @@ public class UserHandler {
                 ctx.status(400);
             }
             ctx.json(body);
+        } catch (RuntimeException e) {
+            var excp = new Gson().toJson(Map.of("message", String.format("Error: unauthorized"),
+                    "success", false));
+            ctx.status(500);
+            ctx.json(excp);
         }
     }
 
@@ -83,6 +88,11 @@ public class UserHandler {
                 ctx.status(401);
             }
             ctx.json(body);
+        } catch (RuntimeException e) {
+            var excp = new Gson().toJson(Map.of("message", String.format("Error: unauthorized"),
+                    "success", false));
+            ctx.status(500);
+            ctx.json(excp);
         }
     }
 
@@ -104,6 +114,20 @@ public class UserHandler {
                     "success", false));
             ctx.status(401);
             ctx.json(logoutBody);
+        }
+        catch (RuntimeException e) {
+            if (e.getMessage().contains("connection")) {
+                var excp = new Gson().toJson(Map.of("message", String.format("Error: unauthorized"),
+                        "success", false));
+                ctx.status(500);
+                ctx.json(excp);
+            }
+            else {
+                var body = new Gson().toJson(Map.of("message", String.format("Error: %s", "unauthorized"),
+                        "success", false));
+                ctx.status(401);
+                ctx.json(body);
+            }
         }
     }
 }

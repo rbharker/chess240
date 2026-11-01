@@ -9,9 +9,20 @@ import model.*;
 import result.*;
 
 class ServiceTest {
-    MemoryAuthDAO authDatabase = new MemoryAuthDAO();
-    MemoryUserDAO userDatabase = new MemoryUserDAO();
-    MemoryGameDAO gameDatabase = new MemoryGameDAO();
+    MySQLAuthDAO authDatabase = null;
+    MySQLUserDAO userDatabase = null;
+    MySQLGameDAO gameDatabase = null;
+
+    // initialize databases
+    {
+        try {
+            authDatabase = new MySQLAuthDAO();
+            userDatabase = new MySQLUserDAO();
+            gameDatabase = new MySQLGameDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     UserService userService = new UserService(userDatabase, authDatabase);
     GameService gameService = new GameService(authDatabase, gameDatabase);
@@ -87,12 +98,14 @@ class ServiceTest {
 
     @Test
     void testRegisterUser() {
+        clearService.clearApplication();
         RegisterResult registerResult = registerUser();
         assertEquals("username", registerResult.username());
     }
 
     @Test
     void testLoginUser() {
+        clearService.clearApplication();
         registerUser();
         LoginResult loginResult = loginUser();
         assertNotNull(loginResult.authToken());
@@ -100,6 +113,7 @@ class ServiceTest {
 
     @Test
     void testLogoutUser() {
+        clearService.clearApplication();
         registerUser();
         LoginResult loginResult = loginUser();
         LogoutResult logoutResult = logoutUser(loginResult.authToken());
@@ -108,6 +122,7 @@ class ServiceTest {
 
     @Test
     void testCreateGame() {
+        clearService.clearApplication();
         registerUser();
         LoginResult loginResult = loginUser();
         CreateGameResult createGameResult = createGame(loginResult.authToken());
@@ -116,6 +131,7 @@ class ServiceTest {
 
     @Test
     void testJoinGame() {
+        clearService.clearApplication();
         registerUser();
         LoginResult loginResult = loginUser();
         JoinGameResult joinGameResult = joinGame(loginResult.authToken());
@@ -124,6 +140,7 @@ class ServiceTest {
 
     @Test
     void testListGames() {
+        clearService.clearApplication();
         registerUser();
         LoginResult loginResult = loginUser();
         ListGamesResult listGamesResult = listGames(loginResult.authToken());
@@ -132,6 +149,7 @@ class ServiceTest {
 
     @Test
     void testClearApplication() {
+        clearService.clearApplication();
         registerUser();
         LoginResult loginResult = loginUser();
         CreateGameResult createGameResult = createGame(loginResult.authToken());
@@ -141,6 +159,7 @@ class ServiceTest {
 
     @Test
     void testIncorrectPasswordThrowsException() {
+        clearService.clearApplication();
         registerUser();
         LoginRequest loginRequest = new LoginRequest("username", "wrongpassword");
         assertThrows(DataAccessException.class, () -> userService.login(loginRequest));

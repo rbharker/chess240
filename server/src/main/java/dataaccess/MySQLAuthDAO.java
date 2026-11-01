@@ -18,7 +18,7 @@ public class MySQLAuthDAO implements AuthDAO {
               `username` varchar(256) NOT NULL,
               `json` TEXT DEFAULT NULL,
               PRIMARY KEY (`id`),
-              INDEX(authtoken),
+              INDEX(authToken),
               INDEX(username)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
@@ -57,13 +57,13 @@ public class MySQLAuthDAO implements AuthDAO {
                 return rs.getString("username");
             }
         } catch (DataAccessException | SQLException e) {
-            throw new DataAccessException(String.format("unable to retrieve user: %s", e.getMessage()));
+            throw new DataAccessException("bad request");
         }
     }
 
     @Override
     public String deleteAuth(String authToken) {
-        var statement = "DELETE authToken, username FROM authData WHERE authToken = ?";
+        var statement = "DELETE FROM authData WHERE authToken = ?";
         try{
             DatabaseManager.executeUpdate(statement, authToken);
         } catch (DataAccessException e) {
