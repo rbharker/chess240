@@ -141,26 +141,6 @@ public class MySQLGameDAO implements GameDAO {
     }
 
     @Override
-    public List<Object> getGameData(String gameID) throws DataAccessException {
-        String statement = "SELECT whiteUsername, blackUsername, gameName FROM userData WHERE gameId = ?";
-        try (var conn = DatabaseManager.getConnection()) {
-            try (PreparedStatement ps = conn.prepareStatement(statement)) {
-                ps.setString(1, gameID);
-                var rs = ps.executeQuery();
-                rs.next();
-                List<Object> data = new ArrayList<>();
-                data.add(gameID);
-                data.add(rs.getString("whiteUsername"));
-                data.add(rs.getString("blackUsername"));
-                data.add(rs.getString("gameName"));
-                return data;
-            }
-        } catch (DataAccessException | SQLException e) {
-            throw new DataAccessException("game does not exist");
-        }
-    }
-
-    @Override
     public void clearGames() {
         var statement = "TRUNCATE gameData";
         try{

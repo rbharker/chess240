@@ -33,19 +33,6 @@ public class MemoryGameDAO implements GameDAO {
         return gameList;
     }
 
-    @Override
-    public List<Object> getGameData(String gameID) throws DataAccessException {
-        if (!dataCollection.containsKey(gameID)) {
-            throw new DataAccessException("game does not exist");
-        }
-        else {
-            List<Object> data = new ArrayList<>();
-            data.add(gameID);
-            data.addAll(dataCollection.get(gameID));
-            return data;
-        }
-    }
-
     // adds a user to the specified team and game if possible
     @Override
     public void joinGame(String username, String gameID, String playerColor) throws DataAccessException {

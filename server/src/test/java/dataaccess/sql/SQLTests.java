@@ -1,5 +1,6 @@
 package dataaccess.sql;
 
+import com.mysql.cj.util.TestUtils;
 import dataaccess.DataAccessException;
 import dataaccess.sql.MySQLAuthDAO;
 import dataaccess.sql.MySQLGameDAO;
@@ -13,178 +14,136 @@ import result.*;
 import service.ClearService;
 import service.GameService;
 import service.UserService;
+import helpers.TestHelper;
 
 import java.lang.annotation.Annotation;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 public class SQLTests {
 
-    MySQLAuthDAO authDatabase = null;
-    MySQLUserDAO userDatabase = null;
-    MySQLGameDAO gameDatabase = null;
+    MySQLAuthDAO authDatabaseSQL = null;
+    MySQLUserDAO userDatabaseSQL = null;
+    MySQLGameDAO gameDatabaseSQL = null;
 
     // initialize databases
     {
         try {
-            authDatabase = new MySQLAuthDAO();
-            userDatabase = new MySQLUserDAO();
-            gameDatabase = new MySQLGameDAO();
+            authDatabaseSQL = new MySQLAuthDAO();
+            userDatabaseSQL = new MySQLUserDAO();
+            gameDatabaseSQL = new MySQLGameDAO();
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
     }
 
-    UserService userService = new UserService(userDatabase, authDatabase);
-    GameService gameService = new GameService(authDatabase, gameDatabase);
-    ClearService clearService = new ClearService(authDatabase, gameDatabase, userDatabase);
+    UserService userServiceSQL = new UserService(userDatabaseSQL, authDatabaseSQL);
+    GameService gameServiceSQL = new GameService(authDatabaseSQL, gameDatabaseSQL);
+    ClearService clearServiceSQL = new ClearService(authDatabaseSQL, gameDatabaseSQL, userDatabaseSQL);
 
-    RegisterResult registerUserSQL() {
-        UserData testUserSQL = new UserData("username", "password", "email");
-        RegisterRequest registerRequestSQL = new RegisterRequest(testUserSQL.username(), testUserSQL.password(), testUserSQL.email());
+    TestHelper tester = new TestHelper(userServiceSQL, gameServiceSQL, clearServiceSQL);
+
+    @Test
+    void testCreateAuthReturnsAuth() {
+        clearServiceSQL.clearApplication();
+        AuthData data = new AuthData(null, "username");
+        String authToken = authDatabaseSQL.createAuth(data);
+        assertNotNull(authToken);
+    }
+
+    @Test
+    void testGetUserByAuthReturnsUser() {
+        clearServiceSQL.clearApplication();
+        LoginResult result = TestHelper.loginUser();
+        String username = "";
         try {
-            RegisterResult registerResultSQL = userService.register(registerRequestSQL);
-            return registerResultSQL;
+            username = authDatabaseSQL.getUserByAuth(result.authToken());
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
-
+        assertNotNull(username);
     }
 
-    LoginResult loginUserSQL() {
-        UserData testUserSQL = new UserData("username", "password", "email");
-        LoginRequest loginRequestSQL = new LoginRequest(testUserSQL.username(), testUserSQL.password());
+    @Test
+    void testCheckAuthTokenReturnsAuthToken() {
+        clearServiceSQL.clearApplication();
+        LoginResult result = TestHelper.loginUser();
+        String token = authDatabaseSQL.checkAuthToken(result.authToken());
+        assertEquals(result.authToken(), token);
+    }
+
+    @Test
+    void testCreateUserDoesNotThrowException() {
+        clearServiceSQL.clearApplication();
+        UserData data = new UserData("username", "password", "email");
+        assertDoesNotThrow(() -> userDatabaseSQL.createUser(data));
+    }
+
+    @Test
+    void testGetUserReturnsUser() {
+        clearServiceSQL.clearApplication();
+        TestHelper.registerUser();
+        UserData data = null;
         try {
-            LoginResult loginResultSQL = userService.login(loginRequestSQL);
-            return loginResultSQL;
+            data = userDatabaseSQL.getUser("username");
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
+        assertNotNull(data);
     }
 
-    LogoutResult logoutUserSQL(String authToken) {
-        AuthData authDataSQL = new AuthData(authToken, null);
-        LogoutRequest logoutRequestSQL = new LogoutRequest(authToken);
+    @Test
+    void testHashUserPassword() {
+        String password = "password";
+        String hashed = userDatabaseSQL.hashUserPassword(password);
+        assertNotEquals(password, hashed);
+    }
+
+    @Test
+    void testVerifyPassword() {
+        String password = "password";
+        String hashed = userDatabaseSQL.hashUserPassword(password);
+        boolean result = userDatabaseSQL.verifyPassword(password, hashed);
+        assertTrue(result);
+    }
+
+    @Test
+    void testCreateGameDoesNotThrowException() {
+        clearServiceSQL.clearApplication();
+        assertDoesNotThrow(() -> gameDatabaseSQL.createGame("name"));
+    }
+
+    @Test
+    void testListGamesReturnsGames() {
+        clearServiceSQL.clearApplication();
+        gameDatabaseSQL.createGame("name");
+        List<GameData> data = null;
         try {
-            LogoutResult logoutResultSQL = userService.logout(logoutRequestSQL);
-            return logoutResultSQL;
+            data = gameDatabaseSQL.listGames();
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    CreateGameResult createGameSQL(String authToken) {
-        GameData testGameSQL = new GameData(1, null, null, "myGame");
-        CreateGameRequest createGameRequestSQL = new CreateGameRequest(authToken, testGameSQL.gameName());
-        try {
-            CreateGameResult createGameResultSQL = gameService.createGame(createGameRequestSQL);
-            return createGameResultSQL;
-        } catch (DataAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    JoinGameResult joinGameSQL(String authToken) {
-        CreateGameResult createGameResultSQL= createGameSQL(authToken);
-        JoinGameRequest joinGameRequestSQL = new JoinGameRequest(authToken, createGameResultSQL.gameID(), "WHITE");
-
-        try {
-            JoinGameResult joinGameResultSQL = gameService.joinGame(joinGameRequestSQL);
-            return joinGameResultSQL;
-        } catch (DataAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    ListGamesResult listGamesSQL(String authToken) {
-        CreateGameResult createGameResultSQL = createGameSQL(authToken);
-        ListGamesRequest listGamesRequestSQL = new ListGamesRequest(authToken);
-        try {
-            ListGamesResult listGamesResultSQL = gameService.listGames(listGamesRequestSQL);
-            return listGamesResultSQL;
-        } catch (DataAccessException e) {
-            throw new RuntimeException(e);
-        }
+        assertNotNull(data);
     }
 
     @Test
-    void testRegisterUserSQL() {
-        clearService.clearApplication();
-        RegisterResult registerResult = registerUserSQL();
-        assertEquals("username", registerResult.username());
+    void testJoinGameDoesNotThrowException() {
+        clearServiceSQL.clearApplication();
+        String gameID = gameDatabaseSQL.createGame("name");
+        assertDoesNotThrow(() -> gameDatabaseSQL.joinGame("username", gameID, "WHITE"));
     }
 
     @Test
-    void testLoginUserSQL() {
-        clearService.clearApplication();
-        registerUserSQL();
-        LoginResult loginResultSQL = loginUserSQL();
-        assertNotNull(loginResultSQL.authToken());
+    void testClearDatabases() {
+        TestHelper.registerUser();
+        LoginResult token = TestHelper.loginUser();
+        clearServiceSQL.clearApplication();
+        assertThrows(RuntimeException.class, () -> authDatabaseSQL.checkAuthToken(token.authToken()));
     }
 
-    @Test
-    void testLogoutUserSQL() {
-        clearService.clearApplication();
-        registerUserSQL();
-        LoginResult loginResultSQL = loginUserSQL();
-        LogoutResult logoutResultSQL = logoutUserSQL(loginResultSQL.authToken());
-        assertNull(logoutResultSQL.result());
-    }
-
-    @Test
-    void testCreateGameSQL() {
-        clearService.clearApplication();
-        registerUserSQL();
-        LoginResult loginResult = loginUserSQL();
-        CreateGameResult createGameResult = createGameSQL(loginResult.authToken());
-        assertNotNull(createGameResult.gameID());
-    }
-
-    @Test
-    void testJoinGameSQL() {
-        clearService.clearApplication();
-        registerUserSQL();
-        LoginResult loginResult = loginUserSQL();
-        JoinGameResult joinGameResult = joinGameSQL(loginResult.authToken());
-        assertNull(joinGameResult.result());
-    }
-
-    @Test
-    void testListGamesSQL() {
-        clearService.clearApplication();
-        registerUserSQL();
-        LoginResult loginResult = loginUserSQL();
-        ListGamesResult listGamesResult = listGamesSQL(loginResult.authToken());
-        assertNotNull(listGamesResult.games());
-    }
-
-    @Test
-    void testClearApplicationSQL() {
-        clearService.clearApplication();
-        registerUserSQL();
-        LoginResult loginResult = loginUserSQL();
-        CreateGameResult createGameResultSQL = createGameSQL(loginResult.authToken());
-        ClearApplicationResult clearApplicationResult = clearService.clearApplication();
-        assertNull(clearApplicationResult.result());
-    }
-
-    @Test
-    void testIncorrectPasswordThrowsExceptionSQL() {
-        clearService.clearApplication();
-        registerUserSQL();
-        LoginRequest loginRequestSQL = new LoginRequest("username", "wrongpassword");
-        assertThrows(DataAccessException.class, () -> userService.login(loginRequestSQL));
-    }
-
-    @Test
-    void testUnauthorizedGameRetrievel() {
-        clearService.clearApplication();
-        registerUserSQL();
-        LoginResult loginResult = loginUserSQL();
-        ListGamesRequest request = new ListGamesRequest("12345");
-        assertThrows(DataAccessException.class, () -> gameService.listGames(request));
-    }
 }
