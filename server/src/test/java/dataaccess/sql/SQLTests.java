@@ -80,6 +80,14 @@ public class SQLTests {
     }
 
     @Test
+    void testCheckAuthTokenThrowsException() {
+        clearServiceSQL.clearApplication();
+        TestHelper.registerUser();
+        TestHelper.loginUser();
+        assertThrows(RuntimeException.class, () -> authDatabaseSQL.checkAuthToken("1234"));
+    }
+
+    @Test
     void testCreateUserDoesNotThrowException() {
         clearServiceSQL.clearApplication();
         UserData data = new UserData("username", "password", "email");
@@ -171,6 +179,29 @@ public class SQLTests {
         LoginResult token = TestHelper.loginUser();
         clearServiceSQL.clearApplication();
         assertThrows(RuntimeException.class, () -> authDatabaseSQL.checkAuthToken(token.authToken()));
+    }
+
+    @Test
+    void testClearAuthDoesNotThrowException() {
+        clearServiceSQL.clearApplication();
+        AuthData data = new AuthData(null, "username");
+        assertDoesNotThrow(() -> authDatabaseSQL.clearAuth());
+    }
+
+    @Test
+    void testClearUsersDoesNotThrowException() {
+        clearServiceSQL.clearApplication();
+        TestHelper.registerUser();
+        assertDoesNotThrow(() -> userDatabaseSQL.clearUsers());
+    }
+
+    @Test
+    void testClearGamesDoesNotThrowException() {
+        clearServiceSQL.clearApplication();
+        TestHelper.registerUser();
+        LoginResult result = TestHelper.loginUser();
+        TestHelper.createGame(result.authToken());
+        assertDoesNotThrow(() -> gameDatabaseSQL.clearGames());
     }
 
 }
