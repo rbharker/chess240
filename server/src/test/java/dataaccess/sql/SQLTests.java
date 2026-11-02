@@ -88,10 +88,26 @@ public class SQLTests {
     }
 
     @Test
+    void testDeleteAuthToken() {
+        clearServiceSQL.clearApplication();
+        TestHelper.registerUser();
+        LoginResult result = TestHelper.loginUser();
+        assertDoesNotThrow(() -> authDatabaseSQL.deleteAuth(result.authToken()));
+    }
+
+    @Test
     void testCreateUserDoesNotThrowException() {
         clearServiceSQL.clearApplication();
         UserData data = new UserData("username", "password", "email");
         assertDoesNotThrow(() -> userDatabaseSQL.createUser(data));
+    }
+
+    @Test
+    void testCreateUserWithUsedUsernameThrowsException() {
+        clearServiceSQL.clearApplication();
+        UserData data = new UserData("username", "password", "email");
+        TestHelper.registerUser();
+        assertThrows(DataAccessException.class, () -> userDatabaseSQL.createUser(data));
     }
 
     @Test
@@ -105,6 +121,12 @@ public class SQLTests {
             throw new RuntimeException(e);
         }
         assertNotNull(data);
+    }
+
+    @Test
+    void testGetUserDoesNotReturnUser() {
+        clearServiceSQL.clearApplication();
+        assertThrows(DataAccessException.class, () -> userDatabaseSQL.getUser("username"));
     }
 
     @Test
