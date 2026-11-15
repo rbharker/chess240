@@ -30,34 +30,24 @@ public class ChessClient {
 
     public void run() {
         System.out.println("Welcome to Chess. Type Help to get started.");
-
-        Scanner scanner = new Scanner(System.in);
         while (!state.equals(State.QUIT)) {
-            String input = scanner.nextLine();
-            eval(input);
-//            if (state == State.LOGGED_OUT) {
-//                handlePreLogin();
-//            } else {
-//                handlePostLogin();
-//            }
+            if (state == State.LOGGED_OUT) {
+                handlePreLogin();
+            } else {
+                handlePostLogin();
+            }
         }
     }
 
-    public void eval(String input) {
-        String[] tokens = input.toLowerCase().split(" ");
-        String cmd = (tokens.length > 0) ? tokens[0] : "help";
-        String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
+    public void evalPreLogin(String input) {
+        String[] preTokens = input.toLowerCase().split(" ");
+        String cmd = (preTokens.length > 0) ? preTokens[0] : "help";
         try {
             switch (cmd) {
                 case "register" -> register();
                 case "login" -> login();
-                case "logout" -> logout();
                 case "help" -> help();
                 case "quit" -> state = State.QUIT;
-                case "create" -> createGame();
-                case "play" -> joinGame(tokens[2], tokens[3]);
-                case "list" -> listGames();
-                case "observe" -> observeGame(tokens[2]);
                 default -> help();
             }
         } catch (ResponseException e) {
@@ -65,42 +55,46 @@ public class ChessClient {
         }
     }
 
-//    public void handlePreLogin() {
-//        // i think this will just print options
-//
-//        return;
-//    }
-//
-//    public void handlePostLogin() {
-//        // i think this will just print options
-//
-//        return;
-//    }
+    public void evalPostLogin(String input) {
+        String[] postTokens = input.toLowerCase().split(" ");
+        String cmd = (postTokens.length > 0) ? postTokens[0] : "help";
+        String[] params = Arrays.copyOfRange(postTokens, 1, postTokens.length);
+        switch (cmd) {
+            case "logout" -> logout();
+            case "help" -> help();
+            case "quit" -> state = State.QUIT;
+            case "create" -> createGame();
+            case "play" -> joinGame(params[1], params[2]);
+            case "list" -> listGames();
+            case "observe" -> observeGame(params[1]);
+            default -> help();
+        }
+    }
+
+    public void handlePreLogin() {
+        Scanner preLoginScanner = new Scanner(System.in);
+        String preLoginInput = preLoginScanner.nextLine();
+        evalPreLogin(preLoginInput);
+    }
+
+    public void handlePostLogin() {
+        Scanner postLoginScanner = new Scanner(System.in);
+        String postLoginInput = postLoginScanner.nextLine();
+        evalPostLogin(postLoginInput);
+    }
 
     public void register() throws ResponseException {
         System.out.println("Username:");
         Scanner userNameScanner = new Scanner(System.in);
-        var username = "";
-
-        while (!username.equals("quit")) {
-            username = userNameScanner.nextLine();
-        }
+        var username = userNameScanner.nextLine();
 
         System.out.println("Password:");
         Scanner passwordScanner = new Scanner(System.in);
-        var password = "";
-
-        while (!password.equals("quit")) {
-            password = passwordScanner.nextLine();
-        }
+        var password = passwordScanner.nextLine();
 
         System.out.println("Email:");
         Scanner emailScanner = new Scanner(System.in);
-        var email = "";
-
-        while (!email.equals("quit")) {
-            email = emailScanner.nextLine();
-        }
+        var email = emailScanner.nextLine();
 
         RegisterRequest registerRequest = new RegisterRequest(username, password, email);
         try {
@@ -114,19 +108,11 @@ public class ChessClient {
     public void login() throws ResponseException {
         System.out.println("Username:");
         Scanner userNameScanner = new Scanner(System.in);
-        var username = "";
-
-        while (!username.equals("quit")) {
-            username = userNameScanner.nextLine();
-        }
+        var username = userNameScanner.nextLine();
 
         System.out.println("Password:");
         Scanner passwordScanner = new Scanner(System.in);
-        var password = "";
-
-        while (!password.equals("quit")) {
-            username = passwordScanner.nextLine();
-        }
+        var password = passwordScanner.nextLine();
 
         LoginRequest loginData = new LoginRequest(username, password);
         try {
@@ -156,11 +142,7 @@ public class ChessClient {
     public void createGame() {
         System.out.println("Game name:");
         Scanner gameNameScanner = new Scanner(System.in);
-        var gameName = "";
-
-        while (!gameName.equals("quit")) {
-            gameName = gameNameScanner.nextLine();
-        }
+        var gameName = gameNameScanner.nextLine();
 
         CreateGameRequest createGameRequest = new CreateGameRequest(authData.authToken(), gameName);
 
@@ -219,11 +201,25 @@ public class ChessClient {
     }
 
     public void help() {
-        return;
+        if (state == State.LOGGED_OUT) {
+            System.out.println("register <USERNAME> <PASSWORD> <EMAIL> - to create an account");
+            System.out.println("login <USERNAME> <PASSWORD> - to login");
+            System.out.println("quit - quit the application");
+            System.out.println("help - list possible commands");
+        }
+        else if (state == State.LOGGED_IN) {
+            System.out.println("logout - to logout of your account");
+            System.out.println("quit - quit playing chess");
+            System.out.println("help - list possible commands");
+            System.out.println("create game - to create a chess game");
+            System.out.println("list games - to receive a list of all active chess games");
+            System.out.println("play game <GAME #> <COLOR (WHITE/BLACK)> - to play a chess game");
+            System.out.println("observe game <GAME #> - to observe a chess game");
+        }
     }
 
     public void quit() {
-            return;
-        }
+        return;
+    }
 
 }
