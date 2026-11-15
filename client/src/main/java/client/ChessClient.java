@@ -1,14 +1,17 @@
 package client;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 import com.google.gson.Gson;
 import model.*;
 import exception.ResponseException;
-import request.LoginRequest;
-import request.LogoutRequest;
-import request.RegisterRequest;
+import request.*;
+import result.CreateGameResult;
+import result.JoinGameResult;
+import result.ListGamesResult;
 import result.LogoutResult;
 import server.ServerFacade;
 
@@ -19,6 +22,7 @@ public class ChessClient {
     private State state = State.LOGGED_OUT;
     private AuthData authData = null;
     private UserData userData = null;
+    private List<GameData> games = null;
 
     public ChessClient(String serverUrl) throws ResponseException {
         server = new ServerFacade(serverUrl);
@@ -31,11 +35,11 @@ public class ChessClient {
         while (!state.equals(State.QUIT)) {
             String input = scanner.nextLine();
             eval(input);
-            if (state == State.LOGGED_OUT) {
-                handlePreLogin();
-            } else {
-                handlePostLogin();
-            }
+//            if (state == State.LOGGED_OUT) {
+//                handlePreLogin();
+//            } else {
+//                handlePostLogin();
+//            }
         }
     }
 
@@ -50,6 +54,10 @@ public class ChessClient {
                 case "logout" -> logout();
                 case "help" -> help();
                 case "quit" -> state = State.QUIT;
+                case "create" -> createGame();
+                case "play" -> joinGame(tokens[2], tokens[3]);
+                case "list" -> listGames();
+                case "observe" -> observeGame(tokens[2]);
                 default -> help();
             }
         } catch (ResponseException e) {
@@ -57,16 +65,20 @@ public class ChessClient {
         }
     }
 
-    public void handlePreLogin() {
-        return;
-    }
-
-    public void handlePostLogin() {
-        return;
-    }
+//    public void handlePreLogin() {
+//        // i think this will just print options
+//
+//        return;
+//    }
+//
+//    public void handlePostLogin() {
+//        // i think this will just print options
+//
+//        return;
+//    }
 
     public void register() throws ResponseException {
-        System.out.println("username:");
+        System.out.println("Username:");
         Scanner userNameScanner = new Scanner(System.in);
         var username = "";
 
@@ -74,7 +86,7 @@ public class ChessClient {
             username = userNameScanner.nextLine();
         }
 
-        System.out.println("password:");
+        System.out.println("Password:");
         Scanner passwordScanner = new Scanner(System.in);
         var password = "";
 
@@ -82,7 +94,7 @@ public class ChessClient {
             password = passwordScanner.nextLine();
         }
 
-        System.out.println("email:");
+        System.out.println("Email:");
         Scanner emailScanner = new Scanner(System.in);
         var email = "";
 
@@ -100,7 +112,7 @@ public class ChessClient {
     }
 
     public void login() throws ResponseException {
-        System.out.println("username:");
+        System.out.println("Username:");
         Scanner userNameScanner = new Scanner(System.in);
         var username = "";
 
@@ -108,7 +120,7 @@ public class ChessClient {
             username = userNameScanner.nextLine();
         }
 
-        System.out.println("password:");
+        System.out.println("Password:");
         Scanner passwordScanner = new Scanner(System.in);
         var password = "";
 
@@ -139,23 +151,71 @@ public class ChessClient {
             System.out.println("Error: unauthorized");
         }
         state = State.LOGGED_OUT;
-        return;
     }
 
     public void createGame() {
-        return;
+        System.out.println("Game name:");
+        Scanner gameNameScanner = new Scanner(System.in);
+        var gameName = "";
+
+        while (!gameName.equals("quit")) {
+            gameName = gameNameScanner.nextLine();
+        }
+
+        CreateGameRequest createGameRequest = new CreateGameRequest(authData.authToken(), gameName);
+
+        try {
+            CreateGameResult createGameResult = server.createGame(createGameRequest);
+            System.out.println("Game created!");
+        } catch (ResponseException e) {
+            System.out.println("Error: bad request");
+        }
     }
 
     public void listGames() {
-        return;
+        ListGamesRequest listGamesRequest = new ListGamesRequest(authData.authToken());
+        try {
+            ListGamesResult listGamesResult = server.listGames(listGamesRequest);
+            int i = 1;
+            for (GameData game : listGamesResult.games()) {
+                System.out.println("Game " + i);
+                System.out.println("Game name: " + game.gameName());
+                System.out.println("White player:" + game.whiteUsername());
+                System.out.println("Black player:" + game.blackUsername());
+                i++;
+                games.add(game);
+            }
+        } catch (ResponseException e) {
+            System.out.println("Error: bad request");
+        }
     }
 
-    public void joinGame() {
-        return;
+    public void joinGame(String gameNum, String color) {
+        int num = Integer.parseInt(gameNum);
+        if (color.compareToIgnoreCase("WHITE") == 0) {
+            color = "WHITE";
+        }
+        else if (color.compareToIgnoreCase("BLACK") == 0) {
+            color = "BLACK";
+        }
+        else {
+            System.out.println("Error: bad request");
+            return;
+        }
+        String game = String.valueOf(games.get(num-1).gameID());
+        JoinGameRequest joinGameRequest = new JoinGameRequest(authData.authToken(), game, color);
+        try {
+            JoinGameResult joinGameResult = server.joinGame(joinGameRequest);
+            System.out.println("Game joined!");
+        } catch (ResponseException e) {
+            System.out.println("Error: bad request");
+        }
     }
 
-    public void observerGame() {
-        return;
+    public void observeGame(String gameNum) {
+        int num = Integer.parseInt(gameNum);
+        String game = String.valueOf(games.get(num-1).gameID());
+        System.out.println("Game observed!");
     }
 
     public void help() {
