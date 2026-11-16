@@ -106,7 +106,12 @@ public class ChessClient {
             server.registerUser(registerRequest);
             userData = new UserData(username, password, email);
         } catch (ResponseException e) {
-            System.out.println("Error: bad request");
+            if (e.getMessage().equals("Error: bad request")) {
+                System.out.println("Must enter username/password");
+            }
+            else if (e.getMessage().contains("already taken")) {
+                System.out.println("Username already taken!");
+            }
         }
     }
 
@@ -125,7 +130,12 @@ public class ChessClient {
             state = State.LOGGED_IN;
             System.out.println("Successfully logged in.");
         } catch (ResponseException e) {
-            System.out.println("Error: bad request");
+            if (e.getMessage().equals("Error: unauthorized")) {
+                System.out.println("Incorrect password!");
+            }
+            else if (e.getMessage().equals("Error: bad request")) {
+                System.out.println("Must enter username/password");
+            }
         }
     }
 
