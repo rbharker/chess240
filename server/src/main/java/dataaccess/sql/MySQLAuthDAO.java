@@ -5,6 +5,7 @@ import dataaccess.DataAccessException;
 import model.AuthData;
 
 import java.sql.*;
+import java.util.Map;
 
 public class MySQLAuthDAO implements AuthDAO {
 
@@ -79,7 +80,7 @@ public class MySQLAuthDAO implements AuthDAO {
         var statement = "SELECT authToken FROM authData WHERE authToken = ?";
         try (var conn = DatabaseManager.getConnection()) {
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
-                ps.setString(1, authToken);
+                ps.setString(1, authToken.toString());
                 var rs = ps.executeQuery();
                 rs.next();
                 return rs.getString("authToken");
@@ -87,6 +88,19 @@ public class MySQLAuthDAO implements AuthDAO {
         } catch (DataAccessException | SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public String updateAuthToken(String username) {
+        String authToken = AuthDAO.generateToken();
+        AuthData data = new AuthData(authToken, username);
+        var statement = "UPDATE authData SET authToken = ?, json = ? where username = ?";
+        try {
+            DatabaseManager.executeUpdate(statement, authToken, data, username);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+        return authToken;
     }
 }
 

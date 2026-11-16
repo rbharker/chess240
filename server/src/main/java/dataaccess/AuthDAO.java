@@ -30,4 +30,6 @@ public interface AuthDAO {
     // otherwise returns null
     String checkAuthToken(String authToken);
 
+    String updateAuthToken(String username);
+
 }

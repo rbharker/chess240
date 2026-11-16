@@ -45,7 +45,7 @@ public class UserHandler {
         // catch an exception and return the error as a json object with the error code
         } catch (DataAccessException e) {
             var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()),
-                    "success", false));
+                    "success", false, "status", "ServerError"));
             if (e.getMessage().equals("already taken")) {
                 ctx.status(403);
             }
@@ -55,7 +55,7 @@ public class UserHandler {
             ctx.json(body);
         } catch (RuntimeException e) {
             var excp = new Gson().toJson(Map.of("message", String.format("Error: unauthorized register"),
-                    "success", false));
+                    "success", false, "status", "ServerError"));
             ctx.status(500);
             ctx.json(excp);
         }
@@ -80,7 +80,7 @@ public class UserHandler {
         // catch an exception and return the error as a json object with the error code
         } catch (DataAccessException e) {
             var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()),
-                    "success", false));
+                    "success", false, "status", "ServerError"));
             if (e.getMessage().equals("bad request")) {
                 ctx.status(400);
             }
@@ -90,7 +90,7 @@ public class UserHandler {
             ctx.json(body);
         } catch (RuntimeException e) {
             var excp = new Gson().toJson(Map.of("message", String.format("Error: unauthorized login"),
-                    "success", false));
+                    "success", false, "status", "ServerError"));
             ctx.status(500);
             ctx.json(excp);
         }
@@ -111,20 +111,20 @@ public class UserHandler {
 
         } catch (DataAccessException e) {
             var logoutBody = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()),
-                    "success", false));
+                    "success", false, "status", "ServerError"));
             ctx.status(401);
             ctx.json(logoutBody);
         }
         catch (RuntimeException e) {
             if (e.getMessage().contains("connection")) {
                 var excp = new Gson().toJson(Map.of("message", String.format("Error: unauthorized"),
-                        "success", false));
+                        "success", false, "status", "ServerError"));
                 ctx.status(500);
                 ctx.json(excp);
             }
             else {
-                var body = new Gson().toJson(Map.of("message", String.format("Error: %s", "unauthorized logout"),
-                        "success", false));
+                var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage()),
+                        "success", false, "status", "ServerError"));
                 ctx.status(401);
                 ctx.json(body);
             }

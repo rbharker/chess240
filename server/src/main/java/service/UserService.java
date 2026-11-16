@@ -50,8 +50,7 @@ public class UserService {
             if (!(userDAO.verifyPassword(loginRequest.password(), userData.password()))) {
                 throw new DataAccessException("unauthorized");
             }
-            AuthData authData = new AuthData(null, userData.username());
-            String authToken = authDAO.createAuth(authData);
+            String authToken = authDAO.updateAuthToken(userData.username());
             LoginResult result = new LoginResult(userData.username(), authToken);
             return result;
         }
@@ -75,7 +74,7 @@ public class UserService {
         }
         if (authToken != null) {
             authDAO.deleteAuth(authToken);
-            return new LogoutResult(null);
+            return new LogoutResult("null");
         }
         else {
             throw new DataAccessException("unauthorized");

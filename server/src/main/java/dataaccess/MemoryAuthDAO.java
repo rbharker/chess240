@@ -7,6 +7,7 @@ import model.UserData;
 import java.security.KeyException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MemoryAuthDAO implements  AuthDAO {
     HashMap<String, String> dataCollection = new HashMap<>();
@@ -58,5 +59,21 @@ public class MemoryAuthDAO implements  AuthDAO {
         else {
             return null;
         }
+    }
+
+    @Override
+    public String updateAuthToken(String username) {
+        String authToken = AuthDAO.generateToken();
+        String oldToken = "";
+        for (Map.Entry<String, String> entry : dataCollection.entrySet()) {
+            if (entry.getValue().equals(username)) {
+                oldToken = entry.getKey();
+            }
+        }
+
+        dataCollection.remove(oldToken);
+
+        dataCollection.put(authToken, username);
+        return authToken;
     }
 }

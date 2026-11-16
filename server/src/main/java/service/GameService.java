@@ -79,7 +79,7 @@ public class GameService {
         try {
             String username = authDAO.getUserByAuth(authToken);
             gameDAO.joinGame(username, joinGameRequest.gameID(), joinGameRequest.playerColor());
-            return new JoinGameResult(null);
+            return new JoinGameResult("null");
         }
         catch (DataAccessException e) {
             throw e;

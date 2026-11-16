@@ -17,7 +17,6 @@ import server.ServerFacade;
 
 
 public class ChessClient {
-    private String visitorName = null;
     private final ServerFacade server;
     private State state = State.LOGGED_OUT;
     private AuthData authData = null;
@@ -29,6 +28,11 @@ public class ChessClient {
     }
 
     public void run() {
+        try {
+            server.clearApplication();
+        } catch (ResponseException e) {
+            throw new RuntimeException(e);
+        }
         System.out.println("Welcome to Chess. Type Help to get started.");
         while (!state.equals(State.QUIT)) {
             if (state == State.LOGGED_OUT) {
@@ -37,6 +41,7 @@ public class ChessClient {
                 handlePostLogin();
             }
         }
+        System.out.println();
     }
 
     public void evalPreLogin(String input) {
@@ -118,6 +123,7 @@ public class ChessClient {
         try {
             authData = server.loginUser(loginData);
             state = State.LOGGED_IN;
+            System.out.println("Successfully logged in.");
         } catch (ResponseException e) {
             System.out.println("Error: bad request");
         }
@@ -129,8 +135,9 @@ public class ChessClient {
             try {
                 server.logoutUser(logoutRequest);
                 authData = null;
+                System.out.println("Successfully logged out.");
             } catch (ResponseException e) {
-                System.out.println("Error: bad request");
+                System.out.println("Error: " + e.getMessage());
             }
         }
         else {

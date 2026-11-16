@@ -25,54 +25,57 @@ public class ServerFacade {
     }
 
     public AuthData registerUser(RegisterRequest registerRequest) throws ResponseException {
-        var request = buildRequest("POST", "/user", registerRequest);
+        var request = buildRequest("POST", "/user", registerRequest, null);
         var response = sendRequest(request);
         return handleResponse(response, AuthData.class);
     }
 
     public AuthData loginUser(LoginRequest loginRequest) throws ResponseException {
-        var request = buildRequest("POST", "/session", loginRequest);
+        var request = buildRequest("POST", "/session", loginRequest, null);
         var response = sendRequest(request);
         return handleResponse(response, AuthData.class);
     }
 
     public LogoutResult logoutUser(LogoutRequest logoutRequest) throws ResponseException {
-        var request = buildRequest("DELETE", "/session", logoutRequest);
+        var request = buildRequest("DELETE", "/session", logoutRequest, logoutRequest.authData());
         var response = sendRequest(request);
         return handleResponse(response, LogoutResult.class);
     }
 
     public ListGamesResult listGames(ListGamesRequest listGamesRequest) throws ResponseException {
-        var request = buildRequest("GET", "/game", listGamesRequest);
+        var request = buildRequest("GET", "/game", listGamesRequest, null);
         var response = sendRequest(request);
         return handleResponse(response, ListGamesResult.class);
     }
 
     public CreateGameResult createGame(CreateGameRequest createGameRequest) throws ResponseException {
-        var request = buildRequest("POST", "/game", createGameRequest);
+        var request = buildRequest("POST", "/game", createGameRequest, null);
         var response = sendRequest(request);
         return handleResponse(response, CreateGameResult.class);
     }
 
     public JoinGameResult joinGame(JoinGameRequest joinGameRequest) throws ResponseException {
-        var request = buildRequest("PUT", "/session", joinGameRequest);
+        var request = buildRequest("PUT", "/session", joinGameRequest, null);
         var response = sendRequest(request);
         return handleResponse(response, JoinGameResult.class);
     }
 
     public ClearApplicationResult clearApplication() throws ResponseException {
-        var request = buildRequest("DELETE", "/db", null);
+        var request = buildRequest("DELETE", "/db", null, null);
         var response = sendRequest(request);
         return handleResponse(response, ClearApplicationResult.class);
     }
 
     // returns a formatted http request
-    private HttpRequest buildRequest(String method, String path, Object body) {
+    private HttpRequest buildRequest(String method, String path, Object body, String authToken) {
         var request = HttpRequest.newBuilder()
                 .uri(URI.create(serverUrl + path))
                 .method(method, makeRequestBody(body));
         if (body != null) {
             request.setHeader("Content-Type", "application/json");
+        }
+        if (authToken != null) {
+            request.setHeader("authorization", authToken);
         }
         return request.build();
     }
