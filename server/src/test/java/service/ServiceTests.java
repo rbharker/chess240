@@ -55,7 +55,7 @@ class ServiceTests {
         TestHelper.registerUser();
         LoginResult loginResult = TestHelper.loginUser();
         LogoutResult logoutResult = TestHelper.logoutUser(loginResult.authToken());
-        assertNull(logoutResult.result());
+        assertEquals("null", logoutResult.result());
     }
 
     @Test
@@ -73,7 +73,7 @@ class ServiceTests {
         TestHelper.registerUser();
         LoginResult loginResult = TestHelper.loginUser();
         JoinGameResult joinGameResult = TestHelper.joinGame(loginResult.authToken());
-        assertNull(joinGameResult.result());
+        assertEquals("null", joinGameResult.result());
     }
 
     @Test

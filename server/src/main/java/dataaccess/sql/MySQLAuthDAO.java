@@ -94,9 +94,9 @@ public class MySQLAuthDAO implements AuthDAO {
     public String updateAuthToken(String username) {
         String authToken = AuthDAO.generateToken();
         AuthData data = new AuthData(authToken, username);
-        var statement = "UPDATE authData SET authToken = ?, json = ? where username = ?";
+        var statement = "INSERT INTO authData (authToken, username, json) VALUES (?, ?, ?)";
         try {
-            DatabaseManager.executeUpdate(statement, authToken, data, username);
+            DatabaseManager.executeUpdate(statement, authToken, username, data);
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
