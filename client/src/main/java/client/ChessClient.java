@@ -143,6 +143,11 @@ public class ChessClient {
         Scanner emailScanner = new Scanner(System.in);
         var email = emailScanner.nextLine();
 
+        if (username.isBlank() || password.isBlank() || email.isBlank()) {
+            System.out.println("Must input real info!");
+            return;
+        }
+
         RegisterRequest registerRequest = new RegisterRequest(username, password, email);
         try {
             server.registerUser(registerRequest);
@@ -203,6 +208,11 @@ public class ChessClient {
         Scanner gameNameScanner = new Scanner(System.in);
         var gameName = gameNameScanner.nextLine();
 
+        if (gameName.isBlank()) {
+            System.out.println("Name must not be blank!");
+            return;
+        }
+
         for (GameData game : getGameList()) {
             if (game.gameName().equals(gameName)) {
                 System.out.println("Game name already taken!");
@@ -243,7 +253,7 @@ public class ChessClient {
             color = "BLACK";
         }
         else {
-            System.out.println("Error: bad request");
+            System.out.println("Error: invalid color!");
             return;
         }
         String game = String.valueOf(games.get(num-1).gameID());
