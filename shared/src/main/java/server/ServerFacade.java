@@ -43,19 +43,19 @@ public class ServerFacade {
     }
 
     public ListGamesResult listGames(ListGamesRequest listGamesRequest) throws ResponseException {
-        var request = buildRequest("GET", "/game", listGamesRequest, null);
+        var request = buildRequest("GET", "/game", listGamesRequest, listGamesRequest.authToken());
         var response = sendRequest(request);
         return handleResponse(response, ListGamesResult.class);
     }
 
     public CreateGameResult createGame(CreateGameRequest createGameRequest) throws ResponseException {
-        var request = buildRequest("POST", "/game", createGameRequest, null);
+        var request = buildRequest("POST", "/game", createGameRequest, createGameRequest.authToken());
         var response = sendRequest(request);
         return handleResponse(response, CreateGameResult.class);
     }
 
     public JoinGameResult joinGame(JoinGameRequest joinGameRequest) throws ResponseException {
-        var request = buildRequest("PUT", "/session", joinGameRequest, null);
+        var request = buildRequest("PUT", "/game", joinGameRequest, joinGameRequest.authToken());
         var response = sendRequest(request);
         return handleResponse(response, JoinGameResult.class);
     }

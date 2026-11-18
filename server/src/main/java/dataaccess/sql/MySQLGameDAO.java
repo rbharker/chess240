@@ -42,6 +42,7 @@ public class MySQLGameDAO implements GameDAO {
         var updateStatement = "INSERT INTO gameData (gameID, gameName, game, json) VALUES (?, ?, ?, ?)";
         try{
             DatabaseManager.executeUpdate(updateStatement, gameID, gameName, serializer.toJson(new ChessGame()), serializer.toJson(data));
+            // DatabaseManager.executeUpdate(updateStatement, gameID, gameName, "null");
             return gameID;
         } catch (DataAccessException e) {
             throw new RuntimeException(e);

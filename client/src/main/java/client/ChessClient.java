@@ -21,18 +21,19 @@ public class ChessClient {
     private State state = State.LOGGED_OUT;
     private AuthData authData = null;
     private UserData userData = null;
-    private List<GameData> games = null;
+    private List<GameData> games = new ArrayList<>();
 
     public ChessClient(String serverUrl) throws ResponseException {
         server = new ServerFacade(serverUrl);
     }
 
     public void run() {
-        try {
-            server.clearApplication();
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            server.clearApplication();
+//        } catch (ResponseException e) {
+//            throw new RuntimeException(e);
+//        }
+
         System.out.println("Welcome to Chess. Type Help to get started.");
         while (!state.equals(State.QUIT)) {
             if (state == State.LOGGED_OUT) {
@@ -56,7 +57,7 @@ public class ChessClient {
                 default -> help();
             }
         } catch (ResponseException e) {
-            System.out.println("Error: bad request");
+            System.out.println(e.getMessage());
         }
     }
 
@@ -68,10 +69,38 @@ public class ChessClient {
             case "logout" -> logout();
             case "help" -> help();
             case "quit" -> state = State.QUIT;
-            case "create" -> createGame();
-            case "play" -> joinGame(params[1], params[2]);
-            case "list" -> listGames();
-            case "observe" -> observeGame(params[1]);
+            case "create" -> {
+                if (params.length < 1 || !params[0].equals("game")) {
+                    help();
+                }
+                else {
+                    createGame();
+                }
+            }
+            case "play" -> {
+                if (params.length < 1 || !params[0].equals("game")) {
+                    help();
+                }
+                else {
+                    joinGame(params[1], params[2]);
+                }
+            }
+            case "list" -> {
+                if (params.length < 1 || !params[0].equals("games")) {
+                    help();
+                }
+                else {
+                    listGames();
+                }
+            }
+            case "observe" -> {
+                if (params.length < 1 || !params[0].equals("game")) {
+                    help();
+                }
+                else {
+                    observeGame(params[1]);
+                }
+            }
             default -> help();
         }
     }
@@ -83,9 +112,22 @@ public class ChessClient {
     }
 
     public void handlePostLogin() {
+        List<GameData> gameList = getGameList();
+        games.addAll(gameList);
         Scanner postLoginScanner = new Scanner(System.in);
         String postLoginInput = postLoginScanner.nextLine();
         evalPostLogin(postLoginInput);
+    }
+
+    public List<GameData> getGameList() {
+        ListGamesRequest listGamesRequest = new ListGamesRequest(authData.authToken());
+        try {
+            ListGamesResult listGamesResult = server.listGames(listGamesRequest);
+            return listGamesResult.games();
+        } catch (ResponseException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
     }
 
     public void register() throws ResponseException {
@@ -147,7 +189,7 @@ public class ChessClient {
                 authData = null;
                 System.out.println("Successfully logged out.");
             } catch (ResponseException e) {
-                System.out.println("Error: " + e.getMessage());
+                System.out.println(e.getMessage());
             }
         }
         else {
@@ -161,32 +203,35 @@ public class ChessClient {
         Scanner gameNameScanner = new Scanner(System.in);
         var gameName = gameNameScanner.nextLine();
 
+        for (GameData game : getGameList()) {
+            if (game.gameName().equals(gameName)) {
+                System.out.println("Game name already taken!");
+                return;
+            }
+        }
+
         CreateGameRequest createGameRequest = new CreateGameRequest(authData.authToken(), gameName);
 
         try {
             CreateGameResult createGameResult = server.createGame(createGameRequest);
+            GameData game = new GameData(Integer.parseInt(createGameResult.gameID()), null, null, gameName);
+            games.add(game);
             System.out.println("Game created!");
         } catch (ResponseException e) {
-            System.out.println("Error: bad request");
+            System.out.println(e.getMessage());
         }
     }
 
     public void listGames() {
-        ListGamesRequest listGamesRequest = new ListGamesRequest(authData.authToken());
-        try {
-            ListGamesResult listGamesResult = server.listGames(listGamesRequest);
+            List<GameData> gameList = getGameList();
             int i = 1;
-            for (GameData game : listGamesResult.games()) {
+            for (GameData game : gameList) {
                 System.out.println("Game " + i);
                 System.out.println("Game name: " + game.gameName());
                 System.out.println("White player:" + game.whiteUsername());
                 System.out.println("Black player:" + game.blackUsername());
                 i++;
-                games.add(game);
             }
-        } catch (ResponseException e) {
-            System.out.println("Error: bad request");
-        }
     }
 
     public void joinGame(String gameNum, String color) {
@@ -207,7 +252,7 @@ public class ChessClient {
             JoinGameResult joinGameResult = server.joinGame(joinGameRequest);
             System.out.println("Game joined!");
         } catch (ResponseException e) {
-            System.out.println("Error: bad request");
+            System.out.println(e.getMessage());
         }
     }
 
