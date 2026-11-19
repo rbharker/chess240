@@ -1,18 +1,32 @@
 package client;
 
+import dataaccess.DataAccessException;
+import exception.ResponseException;
+import model.AuthData;
 import org.junit.jupiter.api.*;
+import request.*;
+import result.CreateGameResult;
+import result.JoinGameResult;
 import server.Server;
+import server.ServerFacade;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import org.junit.jupiter.api.Order;
 
 
 public class ServerFacadeTests {
 
     private static Server server;
+    static ServerFacade facade;
+    AuthData authData = null;
 
     @BeforeAll
-    public static void init() {
+    public static void init() throws ResponseException {
         server = new Server();
-        var port = server.run(0);
+        var port = server.run(8080);
         System.out.println("Started test HTTP server on " + port);
+        String serverUrl = "http://localhost:8080";
+        facade = new ServerFacade(serverUrl);
     }
 
     @AfterAll
@@ -20,10 +34,59 @@ public class ServerFacadeTests {
         server.stop();
     }
 
+    @Test
+    public void testRegisterUser() throws ResponseException {
+        facade.clearApplication();
+        RegisterRequest registerRequest = new RegisterRequest("test", "test", "test");
+        Assertions.assertDoesNotThrow(() -> facade.registerUser(registerRequest));
+    }
 
     @Test
-    public void sampleTest() {
-        Assertions.assertTrue(true);
+    public void testRegisterSameUser() throws ResponseException {
+        RegisterRequest registerRequest = new RegisterRequest("test", "test", "test");
+        Assertions.assertThrows(ResponseException.class, () -> facade.registerUser(registerRequest));
+    }
+
+    @Test
+    public void testLoginUser() throws ResponseException {
+        LoginRequest loginRequest = new LoginRequest("test", "test");
+        authData = Assertions.assertDoesNotThrow(() -> facade.loginUser(loginRequest));
+    }
+
+    @Test
+    public void testLoginUserTwice() throws ResponseException {
+        LoginRequest loginRequest = new LoginRequest("test", "test");
+        Assertions.assertDoesNotThrow(() -> facade.loginUser(loginRequest));
+    }
+
+    @Test
+    public void testLogoutUser() throws ResponseException {
+        LoginRequest loginRequest = new LoginRequest("test", "test");
+        authData = facade.loginUser(loginRequest);
+        LogoutRequest logoutRequest = new LogoutRequest(authData.authToken());
+        Assertions.assertDoesNotThrow(() -> facade.logoutUser(logoutRequest));
+    }
+
+    @Test
+    public void testCreateGame() throws ResponseException {
+        LoginRequest loginRequest = new LoginRequest("test", "test");
+        authData = facade.loginUser(loginRequest);
+        CreateGameRequest createGameRequest = new CreateGameRequest(authData.authToken(), "game");
+        Assertions.assertDoesNotThrow(() -> facade.createGame(createGameRequest));
+        LogoutRequest logoutRequest = new LogoutRequest(authData.authToken());
+        facade.logoutUser(logoutRequest);
+    }
+
+    @Test
+    public void testJoinGame() throws ResponseException {
+        LoginRequest loginRequest = new LoginRequest("test", "test");
+        authData = facade.loginUser(loginRequest);
+        CreateGameRequest createGameRequest = new CreateGameRequest(authData.authToken(), "game2");
+        CreateGameResult createGameResult = facade.createGame(createGameRequest);
+        JoinGameRequest joinGameRequest = new JoinGameRequest(authData.authToken(), createGameResult.gameID(), "WHITE");
+        Assertions.assertDoesNotThrow(() -> facade.joinGame(joinGameRequest));
+        LogoutRequest logoutRequest = new LogoutRequest(authData.authToken());
+        facade.logoutUser(logoutRequest);
     }
 
 }
