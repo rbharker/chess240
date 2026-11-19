@@ -106,6 +106,7 @@ public class ChessClient {
     }
 
     public void handlePreLogin() {
+        System.out.print("[LOGGED_OUT] >>> ");
         Scanner preLoginScanner = new Scanner(System.in);
         String preLoginInput = preLoginScanner.nextLine();
         evalPreLogin(preLoginInput);
@@ -114,6 +115,7 @@ public class ChessClient {
     public void handlePostLogin() {
         List<GameData> gameList = getGameList();
         games.addAll(gameList);
+        System.out.print("[LOGGED_IN] >>> ");
         Scanner postLoginScanner = new Scanner(System.in);
         String postLoginInput = postLoginScanner.nextLine();
         evalPostLogin(postLoginInput);
@@ -131,20 +133,21 @@ public class ChessClient {
     }
 
     public void register() throws ResponseException {
-        System.out.println("Username:");
+        System.out.print("Username: ");
         Scanner userNameScanner = new Scanner(System.in);
         var username = userNameScanner.nextLine();
 
-        System.out.println("Password:");
+        System.out.print("Password: ");
         Scanner passwordScanner = new Scanner(System.in);
         var password = passwordScanner.nextLine();
 
-        System.out.println("Email:");
+        System.out.print("Email: ");
         Scanner emailScanner = new Scanner(System.in);
         var email = emailScanner.nextLine();
 
-        if (username.isBlank() || password.isBlank() || email.isBlank()) {
-            System.out.println("Must input real info!");
+        if (username.isBlank() || password.isBlank() || email.isBlank()
+            || username.contains(" ") || password.contains(" ") || email.contains(" ")) {
+            System.out.println("Must input real info with no spaces!");
             return;
         }
 
@@ -160,14 +163,25 @@ public class ChessClient {
                 System.out.println("Username already taken!");
             }
         }
+
+        LoginRequest loginData = new LoginRequest(username, password);
+        try {
+            authData = server.loginUser(loginData);
+            state = State.LOGGED_IN;
+            System.out.println("Successfully registered and logged in.");
+        } catch (ResponseException e) {
+            if (e.getMessage().equals("Error: bad request")) {
+                System.out.println("Must enter username/password");
+            }
+        }
     }
 
     public void login() throws ResponseException {
-        System.out.println("Username:");
+        System.out.print("Username: ");
         Scanner userNameScanner = new Scanner(System.in);
         var username = userNameScanner.nextLine();
 
-        System.out.println("Password:");
+        System.out.print("Password: ");
         Scanner passwordScanner = new Scanner(System.in);
         var password = passwordScanner.nextLine();
 
@@ -245,7 +259,19 @@ public class ChessClient {
     }
 
     public void joinGame(String gameNum, String color) {
-        int num = Integer.parseInt(gameNum);
+        int num = 0;
+        try {
+            num = Integer.parseInt(gameNum);
+        } catch (NumberFormatException e) {
+            System.out.println("Please enter a valid integer.");
+            return;
+        }
+
+        if (num > games.size() || num < 1) {
+            System.out.println("Please enter a valid game number.");
+            return;
+        }
+
         if (color.compareToIgnoreCase("WHITE") == 0) {
             color = "WHITE";
         }
@@ -256,7 +282,8 @@ public class ChessClient {
             System.out.println("Error: invalid color!");
             return;
         }
-        String game = String.valueOf(games.get(num-1).gameID());
+        String game = "";
+        game = String.valueOf(games.get(num-1).gameID());
         JoinGameRequest joinGameRequest = new JoinGameRequest(authData.authToken(), game, color);
         try {
             JoinGameResult joinGameResult = server.joinGame(joinGameRequest);
@@ -267,7 +294,18 @@ public class ChessClient {
     }
 
     public void observeGame(String gameNum) {
-        int num = Integer.parseInt(gameNum);
+        int num = 0;
+        try {
+            num = Integer.parseInt(gameNum);
+        } catch (NumberFormatException e) {
+            System.out.println("Please enter a valid integer.");
+            return;
+        }
+
+        if (num > games.size() || num < 1) {
+            System.out.println("Please enter a valid game number.");
+            return;
+        }
         String game = String.valueOf(games.get(num-1).gameID());
         System.out.println("Game observed!");
     }
