@@ -1,18 +1,12 @@
 package client;
 
-import dataaccess.DataAccessException;
 import exception.ResponseException;
 import model.AuthData;
 import org.junit.jupiter.api.*;
 import request.*;
 import result.CreateGameResult;
-import result.JoinGameResult;
 import server.Server;
 import server.ServerFacade;
-
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import org.junit.jupiter.api.Order;
-
 
 public class ServerFacadeTests {
 
@@ -85,6 +79,18 @@ public class ServerFacadeTests {
         CreateGameResult createGameResult = facade.createGame(createGameRequest);
         JoinGameRequest joinGameRequest = new JoinGameRequest(authData.authToken(), createGameResult.gameID(), "WHITE");
         Assertions.assertDoesNotThrow(() -> facade.joinGame(joinGameRequest));
+        LogoutRequest logoutRequest = new LogoutRequest(authData.authToken());
+        facade.logoutUser(logoutRequest);
+    }
+
+    @Test
+    public void testListGames() throws ResponseException {
+        LoginRequest loginRequest = new LoginRequest("test", "test");
+        authData = facade.loginUser(loginRequest);
+        CreateGameRequest createGameRequest = new CreateGameRequest(authData.authToken(), "game2");
+        facade.createGame(createGameRequest);
+        ListGamesRequest listGamesRequest = new ListGamesRequest(authData.authToken());
+        Assertions.assertDoesNotThrow(() -> facade.listGames(listGamesRequest));
         LogoutRequest logoutRequest = new LogoutRequest(authData.authToken());
         facade.logoutUser(logoutRequest);
     }
