@@ -5,14 +5,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-import com.google.gson.Gson;
 import model.*;
 import exception.ResponseException;
 import request.*;
 import result.CreateGameResult;
 import result.JoinGameResult;
 import result.ListGamesResult;
-import result.LogoutResult;
 import server.ServerFacade;
 
 
@@ -252,8 +250,8 @@ public class ChessClient {
             for (GameData game : gameList) {
                 System.out.println("Game " + i);
                 System.out.println("Game name: " + game.gameName());
-                System.out.println("White player:" + game.whiteUsername());
-                System.out.println("Black player:" + game.blackUsername());
+                System.out.println("White player: " + game.whiteUsername());
+                System.out.println("Black player: " + game.blackUsername());
                 i++;
             }
     }
@@ -288,6 +286,8 @@ public class ChessClient {
         try {
             JoinGameResult joinGameResult = server.joinGame(joinGameRequest);
             System.out.println("Game joined!");
+            String[] args = {"WHITE"};
+            ChessBoardUI.main(args);
         } catch (ResponseException e) {
             System.out.println(e.getMessage());
         }
