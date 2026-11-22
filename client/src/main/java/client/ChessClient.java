@@ -286,7 +286,7 @@ public class ChessClient {
         try {
             JoinGameResult joinGameResult = server.joinGame(joinGameRequest);
             System.out.println("Game joined!");
-            String[] args = {"WHITE"};
+            String[] args = {color};
             ChessBoardUI.main(args);
         } catch (ResponseException e) {
             System.out.println(e.getMessage());

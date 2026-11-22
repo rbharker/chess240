@@ -42,7 +42,6 @@ public class MySQLGameDAO implements GameDAO {
         var updateStatement = "INSERT INTO gameData (gameID, gameName, game, json) VALUES (?, ?, ?, ?)";
         try{
             DatabaseManager.executeUpdate(updateStatement, gameID, gameName, serializer.toJson(new ChessGame()), serializer.toJson(data));
-            // DatabaseManager.executeUpdate(updateStatement, gameID, gameName, "null");
             return gameID;
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
@@ -51,14 +50,22 @@ public class MySQLGameDAO implements GameDAO {
 
     @Override
     public List<GameData> listGames() throws DataAccessException {
-        String statement = "SELECT json FROM gameData";
+        String statement = "SELECT gameID, whiteUsername, blackUsername, gameName FROM gameData";
         var serializer = new Gson();
         try (var conn = DatabaseManager.getConnection()) {
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
                 var rs = ps.executeQuery();
                 List<GameData> data = new ArrayList<>();
+                String gameID = "";
+                String whiteUsername = "";
+                String blackUsername = "";
+                String gameName = "";
                 while (rs.next()) {
-                    data.add(serializer.fromJson(rs.getString("json"), GameData.class));
+                    gameID = rs.getString("gameID");
+                    whiteUsername = rs.getString("whiteUsername");
+                    blackUsername = rs.getString("blackUsername");
+                    gameName = rs.getString("gameName");
+                    data.add(new GameData(Integer.parseInt(gameID), whiteUsername, blackUsername, gameName));
                 }
                 return data;
             }
@@ -111,31 +118,35 @@ public class MySQLGameDAO implements GameDAO {
         // if the color is not being played
         String updateStatement = "";
         GameData updated = null;
-        String gameNameStatement = "SELECT json FROM gameData where gameID = ?";
-        String json = "";
+        String gameNameStatement = "SELECT gameID, whiteUsername, blackUsername, gameName FROM gameData where gameID = ?";
+        String oldGameID = "";
+        String oldWhiteUsername = "";
+        String oldBlackUsername = "";
+        String oldGameName = "";
         try (var conn = DatabaseManager.getConnection()) {
             try (PreparedStatement ps = conn.prepareStatement(gameNameStatement)) {
                 ps.setString(1, gameID);
                 var rs = ps.executeQuery();
                 rs.next();
-                json = rs.getString("json");
+                oldGameID = rs.getString("gameID");
+                oldWhiteUsername = rs.getString("whiteUsername");
+                oldBlackUsername = rs.getString("blackUsername");
+                oldGameName = rs.getString("gameName");
             }
         } catch (DataAccessException | SQLException e) {
             throw new DataAccessException("bad request");
         }
 
-        GameData oldData = serializer.fromJson(json, GameData.class);
+        GameData oldData = new GameData(Integer.parseInt(oldGameID), oldWhiteUsername, oldBlackUsername, oldGameName);
 
         if (playerColor.equals("WHITE")) {
-            updateStatement = "UPDATE gameData SET whiteUsername = ?, json = ? WHERE gameID = ?";
-            updated = new GameData(oldData.gameID(), username, oldData.blackUsername(), oldData.gameName());
+            updateStatement = "UPDATE gameData SET whiteUsername = ? WHERE gameID = ?";
         }
         else if (playerColor.equals("BLACK")) {
-            updateStatement = "UPDATE gameData SET blackUsername = ?, json = ? WHERE gameID = ?";
-            updated = new GameData(oldData.gameID(), oldData.whiteUsername(), username, oldData.gameName());
+            updateStatement = "UPDATE gameData SET blackUsername = ? WHERE gameID = ?";
         }
         try {
-            DatabaseManager.executeUpdate(updateStatement, username, serializer.toJson(updated), gameID);
+            DatabaseManager.executeUpdate(updateStatement, username, gameID);
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }

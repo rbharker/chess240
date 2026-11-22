@@ -2,7 +2,6 @@ package client;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Random;
 
 import static client.EscapeSequences.*;
 
@@ -24,8 +23,6 @@ public class ChessBoardUI {
     private static final String R = " R ";
     private static final String P = " P ";
 
-    private static Random rand = new Random();
-
     public static void main(String[] args) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
@@ -33,7 +30,7 @@ public class ChessBoardUI {
 
         drawHeader(out);
 
-        drawChessBoard(out, args[0]);
+        drawChessBoard(out, "WHITE", args[0]);
 
         drawHeader(out);
 
@@ -76,52 +73,106 @@ public class ChessBoardUI {
         setDarkGray(out);
     }
 
-    private static void drawChessBoard(PrintStream out, String playerColor) {
+    private static void drawChessBoard(PrintStream out, String rowStartColor, String playerColor) {
 
         for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
 
-            drawRowOfSquares(out, playerColor);
+
+            if (boardRow == 0 || boardRow == 7) {
+                drawRowOfSquares(out, rowStartColor, playerColor, false, true);
+            }
+            else if (boardRow == 1 || boardRow == 6) {
+                drawRowOfSquares(out, rowStartColor, playerColor, true, false);
+            }
+            else {
+                drawRowOfSquares(out, rowStartColor, playerColor, false, false);
+            }
 
             if (boardRow < BOARD_SIZE_IN_SQUARES - 1) {
                 // Draw horizontal row separator.
                 drawHorizontalLine(out);
                 setDarkGray(out);
             }
+
+            if (rowStartColor == "WHITE") {
+                rowStartColor = "BLACK";
+            }
+            else {
+                rowStartColor = "WHITE";
+            }
         }
     }
 
-    private static void drawRowOfSquares(PrintStream out, String color) {
+    private static void drawRowOfSquares(PrintStream out, String rowStartColor, String playerColor,
+                                         boolean pawns, boolean pieces) {
         int counter = 0;
-        String currentColor = "";
+        String currentSquareColor = "";
         for (int squareRow = 0; squareRow < SQUARE_SIZE_IN_PADDED_CHARS; ++squareRow) {
-            if (color.equals("WHITE")) {
-                if (counter % 2 == 0) {
-                    currentColor = "WHITE";
-                    setWhite(out);
-                }
-                else {
-                    currentColor = "BLACK";
-                    setDarkGray(out);
-                }
-            } else {
-                if (counter % 2 == 0) {
-                    setDarkGray(out);
-                    currentColor = "BLACK";
-                }
-                else {
-                    setWhite(out);
-                    currentColor = "WHITE";
-                }
-            }
 
             for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
+
+                if (rowStartColor.equals("WHITE")) {
+                    if (counter % 2 == 0) {
+                        currentSquareColor = "WHITE";
+                        setWhite(out);
+                    }
+                    else {
+                        currentSquareColor = "BLACK";
+                        setDarkGray(out);
+                    }
+                } else {
+                    if (counter % 2 == 0) {
+                        setDarkGray(out);
+                        currentSquareColor = "BLACK";
+                    }
+                    else {
+                        setWhite(out);
+                        currentSquareColor = "WHITE";
+                    }
+                }
 
                 if (squareRow == SQUARE_SIZE_IN_PADDED_CHARS / 2) {
                     int prefixLength = SQUARE_SIZE_IN_PADDED_CHARS / 2;
                     int suffixLength = SQUARE_SIZE_IN_PADDED_CHARS - prefixLength - 1;
 
                     out.print(EMPTY.repeat(prefixLength));
-                    printPlayer(out, rand.nextBoolean() ? K : Q, currentColor);
+                    if (pawns == true) {
+                        printPlayer(out, P, currentSquareColor, playerColor);
+                    }
+                    else if (pieces == true) {
+                        switch (boardCol) {
+                            case 0:
+                                printPlayer(out, R, currentSquareColor, playerColor);
+                                break;
+                            case 1:
+                                printPlayer(out, N, currentSquareColor, playerColor);
+                                break;
+                            case 2:
+                                printPlayer(out, B, currentSquareColor, playerColor);
+                                break;
+                            case 3:
+                                printPlayer(out, K, currentSquareColor, playerColor);
+                                break;
+                            case 4:
+                                printPlayer(out, Q, currentSquareColor, playerColor);
+                                break;
+                            case 5:
+                                printPlayer(out, B, currentSquareColor, playerColor);
+                                break;
+                            case 6:
+                                printPlayer(out, N, currentSquareColor, playerColor);
+                                break;
+                            case 7:
+                                printPlayer(out, R, currentSquareColor, playerColor);
+                                break;
+                            default:
+                                printPlayer(out, EMPTY2, currentSquareColor, playerColor);
+                                break;
+                        }
+                    }
+                    else {
+                        printPlayer(out, EMPTY2, currentSquareColor, playerColor);
+                    }
                     out.print(EMPTY.repeat(suffixLength));
                 }
                 else {
@@ -134,10 +185,10 @@ public class ChessBoardUI {
                     out.print(EMPTY.repeat(BOARD_LINE_WIDTH_IN_PADDED_CHARS));
                 }
                 setLightGray(out);
+                counter += 1;
 
             }
             out.println();
-            counter++;
         }
     }
 
@@ -175,15 +226,20 @@ public class ChessBoardUI {
         out.print(RESET_TEXT_COLOR);
     }
 
-    private static void printPlayer(PrintStream out, String player, String playerColor) {
-        if (playerColor.equals("WHITE")) {
+    private static void printPlayer(PrintStream out, String player, String squareColor, String playerColor) {
+        if (squareColor.equals("WHITE")) {
             out.print(SET_BG_COLOR_WHITE);
         }
         else {
             out.print(SET_BG_COLOR_DARK_GREY);
         }
-        out.print(SET_BG_COLOR_WHITE);
-        out.print(SET_TEXT_COLOR_BLUE);
+
+        if (playerColor == "WHITE") {
+            out.print(SET_TEXT_COLOR_BLUE);
+        }
+        else {
+            out.print(SET_TEXT_COLOR_RED);
+        }
 
         out.print(player);
 
