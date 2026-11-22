@@ -270,13 +270,7 @@ public class ChessClient {
             return;
         }
 
-        if (color.compareToIgnoreCase("WHITE") == 0) {
-            color = "WHITE";
-        }
-        else if (color.compareToIgnoreCase("BLACK") == 0) {
-            color = "BLACK";
-        }
-        else {
+        if (!color.equals("WHITE") && ! color.equals("BLACK")) {
             System.out.println("Error: invalid color!");
             return;
         }
@@ -308,6 +302,8 @@ public class ChessClient {
         }
         String game = String.valueOf(games.get(num-1).gameID());
         System.out.println("Game observed!");
+        String[] args = {"WHITE"};
+        ChessBoardUI.main(args);
     }
 
     public void help() {

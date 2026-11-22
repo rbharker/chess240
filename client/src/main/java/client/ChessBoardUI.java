@@ -43,7 +43,7 @@ public class ChessBoardUI {
         setDarkGray(out);
 
         String[] headerFooter = {"a", "b", "c", "d", "e", "f", "g", "h"};
-        out.print(EMPTY2.repeat(HEADER_LINE_WIDTH_IN_PADDED_CHARS));
+        out.print(EMPTY1.repeat(HEADER_LINE_WIDTH_IN_PADDED_CHARS));
         for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
             drawHeader(out, headerFooter[boardCol]);
 
@@ -64,11 +64,11 @@ public class ChessBoardUI {
         out.print(EMPTY.repeat(suffixLength));
     }
 
-    private static void printHeaderText(PrintStream out, String player) {
+    private static void printHeaderText(PrintStream out, String headerText) {
         out.print(SET_BG_COLOR_DARK_GREY);
         out.print(SET_TEXT_COLOR_YELLOW);
 
-        out.print(player);
+        out.print(headerText);
 
         setDarkGray(out);
     }
@@ -77,15 +77,30 @@ public class ChessBoardUI {
 
         for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
 
-
-            if (boardRow == 0 || boardRow == 7) {
-                drawRowOfSquares(out, rowStartColor, playerColor, false, true);
+            if (boardRow == 0 ) {
+                drawRowOfSquares(out, rowStartColor, playerColor, false, true, boardRow);
             }
-            else if (boardRow == 1 || boardRow == 6) {
-                drawRowOfSquares(out, rowStartColor, playerColor, true, false);
+            else if (boardRow == 7) {
+                if (playerColor == "WHITE") {
+                    drawRowOfSquares(out, rowStartColor, "BLACK", false, true, boardRow);
+                }
+                else {
+                    drawRowOfSquares(out, rowStartColor, "WHITE", false, true, boardRow);
+                }
+            }
+            else if (boardRow == 1) {
+                drawRowOfSquares(out, rowStartColor, playerColor, true, false, boardRow);
+            }
+            else if (boardRow == 6) {
+                if (playerColor == "WHITE") {
+                    drawRowOfSquares(out, rowStartColor, "BLACK", true, false, boardRow);
+                }
+                else {
+                    drawRowOfSquares(out, rowStartColor, "WHITE", true, false, boardRow);
+                }
             }
             else {
-                drawRowOfSquares(out, rowStartColor, playerColor, false, false);
+                drawRowOfSquares(out, rowStartColor, playerColor, false, false, boardRow);
             }
 
             if (boardRow < BOARD_SIZE_IN_SQUARES - 1) {
@@ -104,9 +119,13 @@ public class ChessBoardUI {
     }
 
     private static void drawRowOfSquares(PrintStream out, String rowStartColor, String playerColor,
-                                         boolean pawns, boolean pieces) {
+                                         boolean pawns, boolean pieces, int rowNum) {
         int counter = 0;
         String currentSquareColor = "";
+        out.print(SET_BG_COLOR_DARK_GREY);
+        out.print(SET_TEXT_COLOR_YELLOW);
+
+        out.print(rowNum + 1);
         for (int squareRow = 0; squareRow < SQUARE_SIZE_IN_PADDED_CHARS; ++squareRow) {
 
             for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
@@ -171,7 +190,7 @@ public class ChessBoardUI {
                         }
                     }
                     else {
-                        printPlayer(out, EMPTY2, currentSquareColor, playerColor);
+                        printPlayer(out, EMPTY, currentSquareColor, playerColor);
                     }
                     out.print(EMPTY.repeat(suffixLength));
                 }
@@ -188,6 +207,10 @@ public class ChessBoardUI {
                 counter += 1;
 
             }
+            out.print(SET_BG_COLOR_DARK_GREY);
+            out.print(SET_TEXT_COLOR_YELLOW);
+
+            out.print(rowNum + 1);
             out.println();
         }
     }
