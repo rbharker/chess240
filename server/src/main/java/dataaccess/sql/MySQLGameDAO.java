@@ -106,7 +106,7 @@ public class MySQLGameDAO implements GameDAO {
                         throw new DataAccessException("already taken");
                     }
                 }
-                else if (rs.next() && playerColor.equals("BLACK")) {
+                else if (playerColor.equals("BLACK")) {
                     String blackUsername = rs.getString("blackUsername");
                     if (blackUsername != null) {
                         throw new DataAccessException("already taken");
