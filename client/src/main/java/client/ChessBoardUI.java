@@ -35,7 +35,7 @@ public class ChessBoardUI {
         drawHeader(out);
 
         out.print(SET_TEXT_COLOR_WHITE);
-        out.print(RESET_BG_COLOR);
+        out.print(SET_BG_COLOR_DARK_GREY);
     }
 
     private static void drawHeader(PrintStream out) {

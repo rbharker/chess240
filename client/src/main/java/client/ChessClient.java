@@ -20,6 +20,7 @@ public class ChessClient {
     private AuthData authData = null;
     private UserData userData = null;
     private List<GameData> games = new ArrayList<>();
+    private int gameNumber = 0;
 
     public ChessClient(String serverUrl) throws ResponseException {
         server = new ServerFacade(serverUrl);
@@ -153,6 +154,7 @@ public class ChessClient {
             }
             else if (e.getMessage().contains("already taken")) {
                 System.out.println("Username already taken!");
+                return;
             }
         }
 
@@ -232,6 +234,7 @@ public class ChessClient {
             CreateGameResult createGameResult = server.createGame(createGameRequest);
             GameData game = new GameData(Integer.parseInt(createGameResult.gameID()), null, null, gameName);
             games.add(game);
+            gameNumber++;
             System.out.println("Game created!");
         } catch (ResponseException e) {
             System.out.println(e.getMessage());
@@ -242,10 +245,20 @@ public class ChessClient {
             List<GameData> gameList = getGameList();
             int i = 1;
             for (GameData game : gameList) {
+                String whiteUsername = game.whiteUsername();
+                String blackUsername = game.blackUsername();
+
+                if (game.whiteUsername() == null) {
+                    whiteUsername = "available";
+                }
+                if (game.blackUsername() == null) {
+                    blackUsername = "available";
+                }
+
                 System.out.println("Game " + i);
                 System.out.println("Game name: " + game.gameName());
-                System.out.println("White player: " + game.whiteUsername());
-                System.out.println("Black player: " + game.blackUsername());
+                System.out.println("White player: " + whiteUsername);
+                System.out.println("Black player: " + blackUsername);
                 i++;
             }
     }
@@ -264,7 +277,12 @@ public class ChessClient {
             return;
         }
 
-        if (!color.equals("WHITE") && ! color.equals("BLACK")) {
+        if (color.compareToIgnoreCase("WHITE") == 0) {
+            color = "WHITE";
+        }
+        else if (color.compareToIgnoreCase("BLACK") == 0) {
+            color = "BLACK";
+        } else {
             System.out.println("Error: invalid color!");
             return;
         }
@@ -290,7 +308,7 @@ public class ChessClient {
             return;
         }
 
-        if (num > games.size() || num < 1) {
+        if (num > gameNumber || num < 1) {
             System.out.println("Please enter a valid game number.");
             return;
         }
