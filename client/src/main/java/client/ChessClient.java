@@ -108,6 +108,7 @@ public class ChessClient {
     public void handlePostLogin() {
         List<GameData> gameList = getGameList();
         gameNumber = 0;
+        games.clear();
         for (GameData game : gameList) {
             games.add(game);
             gameNumber++;
