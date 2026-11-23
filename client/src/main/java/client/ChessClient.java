@@ -302,8 +302,8 @@ public class ChessClient {
 
     public void help() {
         if (state == State.LOGGED_OUT) {
-            System.out.println("register <USERNAME> <PASSWORD> <EMAIL> - to create an account");
-            System.out.println("login <USERNAME> <PASSWORD> - to login");
+            System.out.println("register - to create an account");
+            System.out.println("login - to login");
             System.out.println("quit - quit the application");
             System.out.println("help - list possible commands");
         }
