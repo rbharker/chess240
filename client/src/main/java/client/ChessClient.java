@@ -26,12 +26,6 @@ public class ChessClient {
     }
 
     public void run() {
-//        try {
-//            server.clearApplication();
-//        } catch (ResponseException e) {
-//            throw new RuntimeException(e);
-//        }
-
         System.out.println("Welcome to Chess. Type Help to get started.");
         while (!state.equals(State.QUIT)) {
             if (state == State.LOGGED_OUT) {
@@ -322,10 +316,6 @@ public class ChessClient {
             System.out.println("play game <GAME #> <COLOR (WHITE/BLACK)> - to play a chess game");
             System.out.println("observe game <GAME #> - to observe a chess game");
         }
-    }
-
-    public void quit() {
-        return;
     }
 
 }

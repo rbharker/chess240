@@ -3,7 +3,7 @@ package client;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
-import static client.EscapeSequences.*;
+import static ui.EscapeSequences.*;
 
 public class ChessBoardUI {
 
@@ -242,11 +242,6 @@ public class ChessBoardUI {
     private static void setLightGray(PrintStream out) {
         out.print(SET_BG_COLOR_LIGHT_GREY);
         out.print(SET_TEXT_COLOR_WHITE);
-    }
-
-    private static void resetTerminal(PrintStream out) {
-        out.print(RESET_BG_COLOR);
-        out.print(RESET_TEXT_COLOR);
     }
 
     private static void printPlayer(PrintStream out, String player, String squareColor, String playerColor) {
