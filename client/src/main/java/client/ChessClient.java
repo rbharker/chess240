@@ -107,7 +107,11 @@ public class ChessClient {
 
     public void handlePostLogin() {
         List<GameData> gameList = getGameList();
-        games.addAll(gameList);
+        gameNumber = 0;
+        for (GameData game : gameList) {
+            games.add(game);
+            gameNumber++;
+        }
         System.out.print("[LOGGED_IN] >>> ");
         Scanner postLoginScanner = new Scanner(System.in);
         String postLoginInput = postLoginScanner.nextLine();
@@ -272,7 +276,7 @@ public class ChessClient {
             return;
         }
 
-        if (num > games.size() || num < 1) {
+        if (num > gameNumber || num < 1) {
             System.out.println("Please enter a valid game number.");
             return;
         }
