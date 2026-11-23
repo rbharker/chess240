@@ -197,18 +197,12 @@ public class ChessBoardUI {
                                 printPlayer(out, B, currentSquareColor, rowColor);
                                 break;
                             case 3:
-                                if (playerColor.equals("WHITE")) {
-                                    printPlayer(out, Q, currentSquareColor, rowColor);
-                                } else {
-                                    printPlayer(out, K, currentSquareColor, rowColor);
-                                }
+                                if (playerColor.equals("WHITE")) { printPlayer(out, Q, currentSquareColor, rowColor);}
+                                else { printPlayer(out, K, currentSquareColor, rowColor);}
                                 break;
                             case 4:
-                                if (playerColor.equals("WHITE")) {
-                                    printPlayer(out, K, currentSquareColor, rowColor);
-                                } else {
-                                    printPlayer(out, Q, currentSquareColor, rowColor);
-                                }
+                                if (playerColor.equals("WHITE")) {printPlayer(out, K, currentSquareColor, rowColor);}
+                                else {printPlayer(out, Q, currentSquareColor, rowColor);}
                                 break;
                             case 5:
                                 printPlayer(out, B, currentSquareColor, rowColor);
