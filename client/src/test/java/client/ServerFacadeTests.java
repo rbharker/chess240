@@ -49,6 +49,9 @@ public class ServerFacadeTests {
     @Test
     @Order(3)
     public void testLoginUser() throws ResponseException {
+        facade.clearApplication();
+        RegisterRequest registerRequest = new RegisterRequest("test", "test", "test");
+        facade.registerUser(registerRequest);
         LoginRequest loginRequest = new LoginRequest("test", "test");
         authData = Assertions.assertDoesNotThrow(() -> facade.loginUser(loginRequest));
     }
@@ -63,6 +66,9 @@ public class ServerFacadeTests {
     @Test
     @Order(5)
     public void testLogoutUser() throws ResponseException {
+        facade.clearApplication();
+        RegisterRequest registerRequest = new RegisterRequest("test", "test", "test");
+        facade.registerUser(registerRequest);
         LoginRequest loginRequest = new LoginRequest("test", "test");
         authData = facade.loginUser(loginRequest);
         LogoutRequest logoutRequest = new LogoutRequest(authData.authToken());
@@ -83,6 +89,9 @@ public class ServerFacadeTests {
     @Test
     @Order(7)
     public void testJoinGame() throws ResponseException {
+        facade.clearApplication();
+        RegisterRequest registerRequest = new RegisterRequest("test", "test", "test");
+        facade.registerUser(registerRequest);
         LoginRequest loginRequest = new LoginRequest("test", "test");
         authData = facade.loginUser(loginRequest);
         CreateGameRequest createGameRequest = new CreateGameRequest(authData.authToken(), "game2");
