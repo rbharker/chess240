@@ -31,10 +31,12 @@ public class ServerFacadeTests {
         server.stop();
     }
 
+    @BeforeEach
+    void clearDatabase() throws ResponseException {facade.clearApplication();}
+
     @Test
     @Order(1)
     public void testRegisterUser() throws ResponseException {
-        facade.clearApplication();
         RegisterRequest registerRequest = new RegisterRequest("test", "test", "test");
         Assertions.assertDoesNotThrow(() -> facade.registerUser(registerRequest));
     }
@@ -43,13 +45,13 @@ public class ServerFacadeTests {
     @Order(2)
     public void testRegisterSameUser() throws ResponseException {
         RegisterRequest registerRequest = new RegisterRequest("test", "test", "test");
+        facade.registerUser(registerRequest);
         Assertions.assertThrows(ResponseException.class, () -> facade.registerUser(registerRequest));
     }
 
     @Test
     @Order(3)
     public void testLoginUser() throws ResponseException {
-        facade.clearApplication();
         RegisterRequest registerRequest = new RegisterRequest("test", "test", "test");
         facade.registerUser(registerRequest);
         LoginRequest loginRequest = new LoginRequest("test", "test");
@@ -59,14 +61,16 @@ public class ServerFacadeTests {
     @Test
     @Order(4)
     public void testLoginUserTwice() throws ResponseException {
+        RegisterRequest registerRequest = new RegisterRequest("test", "test", "test");
+        facade.registerUser(registerRequest);
         LoginRequest loginRequest = new LoginRequest("test", "test");
+        facade.loginUser(loginRequest);
         Assertions.assertDoesNotThrow(() -> facade.loginUser(loginRequest));
     }
 
     @Test
     @Order(5)
     public void testLogoutUser() throws ResponseException {
-        facade.clearApplication();
         RegisterRequest registerRequest = new RegisterRequest("test", "test", "test");
         facade.registerUser(registerRequest);
         LoginRequest loginRequest = new LoginRequest("test", "test");
@@ -78,6 +82,8 @@ public class ServerFacadeTests {
     @Test
     @Order(6)
     public void testCreateGame() throws ResponseException {
+        RegisterRequest registerRequest = new RegisterRequest("test", "test", "test");
+        facade.registerUser(registerRequest);
         LoginRequest loginRequest = new LoginRequest("test", "test");
         authData = facade.loginUser(loginRequest);
         CreateGameRequest createGameRequest = new CreateGameRequest(authData.authToken(), "game");
@@ -89,7 +95,6 @@ public class ServerFacadeTests {
     @Test
     @Order(7)
     public void testJoinGame() throws ResponseException {
-        facade.clearApplication();
         RegisterRequest registerRequest = new RegisterRequest("test", "test", "test");
         facade.registerUser(registerRequest);
         LoginRequest loginRequest = new LoginRequest("test", "test");
@@ -105,6 +110,8 @@ public class ServerFacadeTests {
     @Test
     @Order(8)
     public void testListGames() throws ResponseException {
+        RegisterRequest registerRequest = new RegisterRequest("test", "test", "test");
+        facade.registerUser(registerRequest);
         LoginRequest loginRequest = new LoginRequest("test", "test");
         authData = facade.loginUser(loginRequest);
         CreateGameRequest createGameRequest = new CreateGameRequest(authData.authToken(), "game2");
